@@ -5,6 +5,9 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\HallController;
 use App\Http\Controllers\ClientController;
+use App\Http\Controllers\PriceController;
+use App\Http\Controllers\MovieController;
+use App\Http\Controllers\ScreeningController;
 
 // Аутентификация
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
@@ -13,15 +16,40 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // Админка
 Route::middleware('auth')->prefix('admin')->group(function () {
+
+    // Дашборд администратора
     Route::get('/', [AdminController::class, 'index'])->name('admin.index');
-    Route::post('/halls', [HallController::class, 'store']);
-    Route::delete('/halls/{hall}', [HallController::class, 'destroy']);
+
+    // Залы
     Route::resource('halls', HallController::class)->except(['show', 'edit', 'update']);
+    Route::post('/halls/{hall}/update', [HallController::class, 'update'])->name('halls.update');
+
+    // Цены
+    Route::post('/prices/{hall}', [PriceController::class, 'update'])->name('prices.update');
+
+    // Фильмы
+    Route::resource('movies', MovieController::class)->except(['show', 'create', 'edit']);
+
+    // Сеансы
+    Route::resource('screenings', ScreeningController::class)->only(['store', 'destroy']);
+
+    // Открытие продаж
+    Route::post('/open-sales', [AdminController::class, 'openSales'])->name('open.sales');
 });
 
 // Клиентская часть
+
+// Главная страница со списком фильмов
 Route::get('/', [ClientController::class, 'index'])->name('client.index');
+
+// Просмотр зала и выбор мест для конкретного сеанса
 Route::get('/hall/{screening}', [ClientController::class, 'showHall'])->name('client.hall');
+
+// Сохранение выбранных мест в сессии
 Route::post('/process-payment', [ClientController::class, 'processPayment'])->name('client.payment.process');
+
+// Отображение формы оплаты
 Route::get('/payment', [ClientController::class, 'showPayment'])->name('client.payment.view');
+
+// Генерация билета после оплаты
 Route::get('/ticket', [ClientController::class, 'generateTicket'])->name('client.ticket');

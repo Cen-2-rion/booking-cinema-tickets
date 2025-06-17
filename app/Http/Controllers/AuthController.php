@@ -7,11 +7,13 @@ use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
+    // Показ формы входа
     public function showLoginForm()
     {
         return view('auth.login');
     }
 
+    // Обработка входа
     public function login(Request $request)
     {
         $credentials = $request->validate([
@@ -21,7 +23,7 @@ class AuthController extends Controller
 
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
-            return redirect()->intended('/admin');
+            return redirect()->intended('/admin'); // Перенаправляем в админку
         }
 
         return back()->withErrors([
@@ -29,6 +31,7 @@ class AuthController extends Controller
         ]);
     }
 
+    // Выход
     public function logout(Request $request)
     {
         Auth::logout();

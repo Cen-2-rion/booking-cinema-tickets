@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 class Hall extends Model
 {
     protected $fillable = ['name', 'rows', 'seats_per_row', 'is_active'];
+    protected $casts = ['is_active' => 'boolean'];
 
     public function seats(): HasMany
     {

@@ -12,6 +12,7 @@ use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class ClientController extends Controller
 {
+    // Главная страница с выбором фильма и сеансов
     public function index()
     {
         $movies = Movie::with(['screenings' => function($query) {
@@ -24,28 +25,29 @@ class ClientController extends Controller
         return view('client.index', compact('movies', 'dates'));
     }
 
+    // Отображение плана зала для выбранного сеанса
     public function showHall(Screening $screening)
     {
         $screening->load(['movie', 'hall.seats', 'tickets.seat']);
+
         return view('client.hall', compact('screening'));
     }
 
+    // Обработка выбора мест
     public function processPayment(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'screening_id' => 'required|exists:screenings,id',
             'seats' => 'required|array',
         ]);
 
-        // Сохраняем выбранные места в сессии
-        $request->session()->put('booking_data', [
-            'screening_id' => $request->screening_id,
-            'seats' => $request->seats
-        ]);
+        // Сохраняем в сессию
+        $request->session()->put('booking_data', $validated);
 
         return response()->json(['success' => true]);
     }
 
+    // Страница оплаты
     public function showPayment(Request $request)
     {
         $bookingData = $request->session()->get('booking_data');
@@ -55,6 +57,7 @@ class ClientController extends Controller
 
         $screening = Screening::with('movie', 'hall')->find($bookingData['screening_id']);
         $selectedSeats = Seat::whereIn('id', $bookingData['seats'])->get();
+
         $seatNumbers = $selectedSeats->map(function($seat) {
             return "Ряд {$seat->row_number}, Место {$seat->seat_number}";
         })->implode(', ');
@@ -71,6 +74,7 @@ class ClientController extends Controller
         ]);
     }
 
+    // Завершение покупки — финальное бронирование билетов
     public function generateTicket(Request $request)
     {
         $bookingData = $request->session()->get('booking_data');
@@ -78,31 +82,23 @@ class ClientController extends Controller
             return redirect('/');
         }
 
-        // Создаем билеты
+        // Создаём билеты
         $tickets = [];
         foreach ($bookingData['seats'] as $seatId) {
-            $qrCode = QrCode::size(200)->generate(uniqid());
+            $qr = QrCode::format('png')->size(200)->generate(uniqid());
             $tickets[] = Ticket::create([
                 'screening_id' => $bookingData['screening_id'],
                 'seat_id' => $seatId,
-                'qr_code' => $qrCode,
+                'qr_code' => base64_encode($qr),
             ]);
         }
 
         // Очищаем сессию
         $request->session()->forget('booking_data');
-
-        return view('client.ticket', [
-            'ticket' => $tickets[0], // Берем первый билет для отображения
-            'seats' => Seat::whereIn('id', $bookingData['seats'])
-                ->get()
-                ->map(function($seat) {
-                    return "Ряд {$seat->row_number}, Место {$seat->seat_number}";
-                })
-                ->implode(', ')
-        ]);
+        return view('client.ticket', ['ticket' => $tickets[0]]);
     }
 
+    // Генерация списка дат для выбора
     private function generateDates()
     {
         $dates = [];
@@ -114,7 +110,7 @@ class ClientController extends Controller
                 'day_week' => $date->isoFormat('dd'),
                 'day_number' => $date->day,
                 'is_today' => $date->isToday(),
-                'is_chosen' => $i === 2 // Пример: третий день выбран по умолчанию
+                'is_chosen' => $i === 2 // 3й день по умолчанию выбран
             ];
         }
 

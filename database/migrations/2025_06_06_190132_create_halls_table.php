@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('halls', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->integer('rows');
-            $table->integer('seats_per_row');
+            $table->unsignedTinyInteger('rows');
+            $table->unsignedTinyInteger('seats_per_row');
             $table->boolean('is_active')->default(true);
             $table->timestamps();
         });

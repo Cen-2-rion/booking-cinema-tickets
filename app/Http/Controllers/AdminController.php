@@ -15,4 +15,9 @@ class AdminController extends Controller
 
         return view('admin.index', compact('halls', 'movies'));
     }
+
+    public function openSales(Request $request)
+    {
+        return redirect()->route('admin.index')->with('success', 'Продажи открыты!');
+    }
 }

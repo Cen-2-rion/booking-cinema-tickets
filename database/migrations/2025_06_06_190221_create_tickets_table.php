@@ -17,6 +17,8 @@ return new class extends Migration
             $table->foreignId('seat_id')->constrained()->onDelete('cascade');
             $table->string('qr_code')->unique();
             $table->timestamps();
+
+            $table->unique(['screening_id', 'seat_id']); // защита от двойного бронирования
         });
     }
 

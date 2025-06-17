@@ -28,12 +28,27 @@ class HallController extends Controller
             }
         }
 
-        return redirect()->route('admin.index');
+        return redirect()->route('admin.index')->with('success', 'Зал создан!');
+    }
+
+    public function update(Request $request, Hall $hall)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'rows' => 'required|integer|min:1|max:20',
+            'seats_per_row' => 'required|integer|min:1|max:20',
+            'is_active' => 'boolean'
+        ]);
+
+        $hall->update($validated);
+
+        return redirect()->route('admin.index')->with('success', 'Зал обновлен!');
     }
 
     public function destroy(Hall $hall)
     {
         $hall->delete();
-        return redirect()->route('admin.index');
+
+        return redirect()->route('admin.index')->with('success', 'Зал удален!');
     }
 }
