@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Админка | ИдёмВКино</title>
     <link rel="stylesheet" href="{{ asset('admin/CSS/normalize.css') }}">
     <link rel="stylesheet" href="{{ asset('admin/CSS/styles.css') }}">
@@ -43,7 +44,7 @@
             </ul>
             <form method="POST" action="{{ route('halls.store') }}">
                 @csrf
-                <button type="submit" class="conf-step__button conf-step__button-accent">Создать зал</button>
+                <button type="submit" class="conf-step__button conf-step__button-accent" id="create-hall">Создать зал</button>
             </form>
         </div>
     </section>
@@ -54,7 +55,7 @@
             <h2 class="conf-step__title">Конфигурация залов</h2>
         </header>
         <div class="conf-step__wrapper">
-            <form method="POST" action="{{ route('halls.update', $halls->first()) }}">
+            <form id="hall-config" method="POST" action="{{ route('halls.update', $halls->first()) }}">
                 @csrf
                 <p class="conf-step__paragraph">Выберите зал для конфигурации:</p>
                 <ul class="conf-step__selectors-box">
@@ -111,7 +112,7 @@
             <h2 class="conf-step__title">Конфигурация цен</h2>
         </header>
         <div class="conf-step__wrapper">
-            <form method="POST" action="{{ route('prices.update', $halls->first()) }}">
+            <form id="price-config" method="POST" action="{{ route('prices.update', $halls->first()) }}">
                 @csrf
                 <p class="conf-step__paragraph">Выберите зал для конфигурации:</p>
                 <ul class="conf-step__selectors-box">
@@ -206,5 +207,9 @@
         </div>
     </section>
 </main>
+
+<script src="{{ asset('admin/js/accordeon.js') }}"></script>
+<script src="{{ asset('admin/js/admin.js') }}"></script>
+
 </body>
 </html>

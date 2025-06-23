@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('name');
             $table->unsignedTinyInteger('rows');
             $table->unsignedTinyInteger('seats_per_row');
-            $table->boolean('is_active')->default(true);
+            $table->boolean('is_active')->default(false);
             $table->timestamps();
         });
     }

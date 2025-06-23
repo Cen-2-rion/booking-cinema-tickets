@@ -9,6 +9,17 @@ use App\Http\Controllers\PriceController;
 use App\Http\Controllers\MovieController;
 use App\Http\Controllers\ScreeningController;
 
+/*
+|--------------------------------------------------------------------------
+| Web Routes
+|--------------------------------------------------------------------------
+|
+| Here is where you can register web routes for your application. These
+| routes are loaded by the RouteServiceProvider and all of them will
+| be assigned to the "web" middleware group. Make something great!
+|
+*/
+
 // Аутентификация
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
@@ -23,6 +34,7 @@ Route::middleware('auth')->prefix('admin')->group(function () {
     // Залы
     Route::resource('halls', HallController::class)->except(['show', 'edit', 'update']);
     Route::post('/halls/{hall}/update', [HallController::class, 'update'])->name('halls.update');
+    Route::get('/api/halls/{hall}', [HallController::class, 'show']);
 
     // Цены
     Route::post('/prices/{hall}', [PriceController::class, 'update'])->name('prices.update');
