@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('prices', function (Blueprint $table) {
             $table->id();
             $table->foreignId('hall_id')->constrained()->onDelete('cascade');
-            $table->decimal('standard_price', 8, 2);
+            $table->decimal('standart_price', 8, 2);
             $table->decimal('vip_price', 8, 2);
             $table->timestamps();
         });

@@ -15,26 +15,20 @@ class HallController extends Controller
             'seats_per_row' => 'required|integer|min:1|max:20',
         ]);
 
-        // Назначение имени по умолчанию
-        if (!isset($validated['name'])) {
-            $validated['name'] = 'Новый зал';
-        }
-
         // Создаём зал с начальной конфигурацией
         $hall = Hall::create([
             'name' => $validated['name'],
-            'rows' => $validated['rows'] ?? 5,
-            'seats_per_row' => $validated['seats_per_row'] ?? 5,
+            'rows' => $validated['rows'],
+            'seats_per_row' => $validated['seats_per_row'],
             'is_active' => false,
         ]);
 
-        // Создание мест
         for ($row = 1; $row <= $hall->rows; $row++) {
             for ($seat = 1; $seat <= $hall->seats_per_row; $seat++) {
                 $hall->seats()->create([
                     'row_number' => $row,
                     'seat_number' => $seat,
-                    'type' => 'standard',
+                    'type' => 'standart',
                 ]);
             }
         }
@@ -50,7 +44,7 @@ class HallController extends Controller
         foreach ($seats as $seat) {
             $row = $seat->row_number;
 
-            // Если такого ряда ещё нет — создаём
+            // Если такого ряда ещё нет - создаём
             if (!isset($groupedSeats[$row])) {
                 $groupedSeats[$row] = [];
             }
@@ -67,28 +61,38 @@ class HallController extends Controller
         return [
             'rows' => $hall->rows,
             'seats_per_row' => $hall->seats_per_row,
-            'seats' => $seatsArray
+            'seats' => $seatsArray,
         ];
     }
 
     public function update(Request $request, Hall $hall)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
             'rows' => 'required|integer|min:1|max:20',
             'seats_per_row' => 'required|integer|min:1|max:20',
-            'is_active' => 'boolean'
+            'seats' => 'required|array',
         ]);
 
-        $hall->update($validated);
+        $hall->update([
+            'rows' => $validated['rows'],
+            'seats_per_row' => $validated['seats_per_row'],
+        ]);
 
-        return redirect()->route('admin.index')->with('success', 'Зал обновлен!');
+        // Удаляем старые места
+        $hall->seats()->delete();
+
+        // Создаём новые
+        foreach ($validated['seats'] as $seat) {
+            $hall->seats()->create($seat);
+        }
+
+        return response()->json(['success' => true]);
     }
 
     public function destroy(Hall $hall)
     {
         $hall->delete();
 
-        return redirect()->route('admin.index')->with('success', 'Зал удален!');
+        return response()->json(['success' => true]);
     }
 }

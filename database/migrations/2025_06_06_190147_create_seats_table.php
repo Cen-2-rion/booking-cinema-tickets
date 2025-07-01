@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('hall_id')->constrained()->onDelete('cascade');
             $table->unsignedTinyInteger('row_number');
             $table->unsignedTinyInteger('seat_number');
-            $table->enum('type', ['standard', 'vip', 'disabled'])->default('standard');
+            $table->enum('type', ['standart', 'vip', 'disabled'])->default('standart');
             $table->timestamps();
         });
     }

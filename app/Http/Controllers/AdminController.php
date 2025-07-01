@@ -18,7 +18,7 @@ class AdminController extends Controller
 
     public function openSales()
     {
-        // Проверяем активность залов, если хоть один активен — меняем статус
+        // Проверяем активность залов, если хоть один активен - меняем статус
         $anyActive = Hall::where('is_active', true)->exists();
         $newStatus = !$anyActive;
 

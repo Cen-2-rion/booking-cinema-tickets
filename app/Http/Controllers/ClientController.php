@@ -51,9 +51,7 @@ class ClientController extends Controller
     public function showPayment(Request $request)
     {
         $bookingData = $request->session()->get('booking_data');
-        if (!$bookingData) {
-            return redirect('/');
-        }
+        if (!$bookingData) return redirect('/');
 
         $screening = Screening::with('movie', 'hall')->find($bookingData['screening_id']);
         $selectedSeats = Seat::whereIn('id', $bookingData['seats'])->get();
@@ -64,7 +62,7 @@ class ClientController extends Controller
 
         // Расчет стоимости
         $totalPrice = $selectedSeats->sum(function($seat) {
-            return $seat->type === 'vip' ? 350 : 250;
+            return $seat->type === 'vip' ? 650 : 350;
         });
 
         return view('client.payment', [
@@ -74,13 +72,11 @@ class ClientController extends Controller
         ]);
     }
 
-    // Завершение покупки — финальное бронирование билетов
+    // Завершение покупки - финальное бронирование билетов
     public function generateTicket(Request $request)
     {
         $bookingData = $request->session()->get('booking_data');
-        if (!$bookingData) {
-            return redirect('/');
-        }
+        if (!$bookingData) return redirect('/');
 
         // Создаём билеты
         $tickets = [];
@@ -98,7 +94,7 @@ class ClientController extends Controller
         return view('client.ticket', ['ticket' => $tickets[0]]);
     }
 
-    // Генерация списка дат для выбора
+    // Генерация списка дат для выбора (неделя вперёд)
     private function generateDates()
     {
         $dates = [];
@@ -110,7 +106,7 @@ class ClientController extends Controller
                 'day_week' => $date->isoFormat('dd'),
                 'day_number' => $date->day,
                 'is_today' => $date->isToday(),
-                'is_chosen' => $i === 2 // 3й день по умолчанию выбран
+                'is_chosen' => $i === 2 // например 3й день по умолчанию выбран
             ];
         }
 

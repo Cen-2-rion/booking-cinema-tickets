@@ -25,19 +25,20 @@ Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-// Админка
+// Административная часть
 Route::middleware('auth')->prefix('admin')->group(function () {
 
     // Дашборд администратора
     Route::get('/', [AdminController::class, 'index'])->name('admin.index');
 
     // Залы
-    Route::resource('halls', HallController::class)->except(['show', 'edit', 'update']);
-    Route::post('/halls/{hall}/update', [HallController::class, 'update'])->name('halls.update');
+    Route::resource('halls', HallController::class)->except(['show', 'edit']);
+    Route::put('/halls/{hall}', [HallController::class, 'update']);
     Route::get('/api/halls/{hall}', [HallController::class, 'show']);
 
     // Цены
-    Route::post('/prices/{hall}', [PriceController::class, 'update'])->name('prices.update');
+    Route::post('/prices/{hall}', [PriceController::class, 'update']);
+    Route::get('/api/prices/{hall}', [PriceController::class, 'show']);
 
     // Фильмы
     Route::resource('movies', MovieController::class)->except(['show', 'create', 'edit']);
@@ -46,22 +47,22 @@ Route::middleware('auth')->prefix('admin')->group(function () {
     Route::resource('screenings', ScreeningController::class)->only(['store', 'destroy']);
 
     // Открытие продаж
-    Route::post('/open-sales', [AdminController::class, 'openSales'])->name('open.sales');
+    Route::post('/open-sales', [AdminController::class, 'openSales']);
 });
 
 // Клиентская часть
 
 // Главная страница со списком фильмов
-Route::get('/', [ClientController::class, 'index'])->name('client.index');
+Route::get('/', [ClientController::class, 'index']);
 
 // Просмотр зала и выбор мест для конкретного сеанса
-Route::get('/hall/{screening}', [ClientController::class, 'showHall'])->name('client.hall');
+Route::get('/hall/{screening}', [ClientController::class, 'showHall']);
 
 // Сохранение выбранных мест в сессии
-Route::post('/process-payment', [ClientController::class, 'processPayment'])->name('client.payment.process');
+Route::post('/process-payment', [ClientController::class, 'processPayment']);
 
 // Отображение формы оплаты
-Route::get('/payment', [ClientController::class, 'showPayment'])->name('client.payment.view');
+Route::get('/payment', [ClientController::class, 'showPayment']);
 
 // Генерация билета после оплаты
-Route::get('/ticket', [ClientController::class, 'generateTicket'])->name('client.ticket');
+Route::get('/ticket', [ClientController::class, 'generateTicket']);

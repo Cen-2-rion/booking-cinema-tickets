@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Авторизация | ИдёмВКино</title>
-    <link rel="stylesheet" href="{{ asset('admin/CSS/normalize.css') }}">
-    <link rel="stylesheet" href="{{ asset('admin/CSS/styles.css') }}">
+    <link rel="stylesheet" href="{{ asset('admin-assets/CSS/normalize.css') }}">
+    <link rel="stylesheet" href="{{ asset('admin-assets/CSS/styles.css') }}">
     <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900&amp;subset=cyrillic,cyrillic-ext,latin-ext" rel="stylesheet">
 </head>
 <body>
@@ -44,7 +44,7 @@
     </section>
 </main>
 
-<script src="{{ asset('admin/js/accordeon.js') }}"></script>
+<script src="{{ asset('admin-assets/js/accordeon.js') }}"></script>
 
 </body>
 </html>

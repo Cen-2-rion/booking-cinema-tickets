@@ -6,8 +6,8 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Админка | ИдёмВКино</title>
-    <link rel="stylesheet" href="{{ asset('admin/CSS/normalize.css') }}">
-    <link rel="stylesheet" href="{{ asset('admin/CSS/styles.css') }}">
+    <link rel="stylesheet" href="{{ asset('admin-assets/CSS/normalize.css') }}">
+    <link rel="stylesheet" href="{{ asset('admin-assets/CSS/styles.css') }}">
     <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900&amp;subset=cyrillic,cyrillic-ext,latin-ext" rel="stylesheet">
 </head>
 <body>
@@ -31,21 +31,16 @@
         <div class="conf-step__wrapper">
             <p class="conf-step__paragraph">Доступные залы:</p>
             <ul class="conf-step__list">
-                @foreach($halls as $hall)
+                @forelse($halls as $hall)
                     <li>
                         {{ $hall->name }}
-                        <form method="POST" action="{{ route('halls.destroy', $hall) }}" style="display:inline">
-                            @csrf
-                            @method('DELETE')
-                            <button class="conf-step__button conf-step__button-trash" type="submit"></button>
-                        </form>
+                        <button class="conf-step__button conf-step__button-trash" data-hall-id="{{ $hall->id }}"></button>
                     </li>
-                @endforeach
+                @empty
+                    <li>Залов нет</li>
+                @endforelse
             </ul>
-            <form method="POST" action="{{ route('halls.store') }}">
-                @csrf
-                <button type="submit" class="conf-step__button conf-step__button-accent" id="create-hall">Создать зал</button>
-            </form>
+            <button type="button" class="conf-step__button conf-step__button-accent" id="create-hall">Создать зал</button>
         </div>
     </section>
 
@@ -55,13 +50,17 @@
             <h2 class="conf-step__title">Конфигурация залов</h2>
         </header>
         <div class="conf-step__wrapper">
-            <form id="hall-config" method="POST" action="{{ route('halls.update', $halls->first()) }}">
-                @csrf
+            @if($halls->isNotEmpty())
                 <p class="conf-step__paragraph">Выберите зал для конфигурации:</p>
                 <ul class="conf-step__selectors-box">
                     @foreach($halls as $hall)
                         <li>
-                            <input type="radio" class="conf-step__radio" name="hall_id" value="{{ $hall->id }}" {{ $loop->first ? 'checked' : '' }}>
+                            <input type="radio"
+                                   class="conf-step__radio"
+                                   name="chairs-hall"
+                                   data-hall-id="{{ $hall->id }}"
+                                   value="{{ $hall->id }}" {{ $loop->first ? 'checked' : '' }}
+                            >
                             <span class="conf-step__selector">{{ $hall->name }}</span>
                         </li>
                     @endforeach
@@ -70,11 +69,11 @@
                 <p class="conf-step__paragraph">Укажите количество рядов и максимальное количество кресел в ряду:</p>
                 <div class="conf-step__legend">
                     <label class="conf-step__label">Рядов, шт
-                        <input type="text" class="conf-step__input" placeholder="10" name="rows" value="{{ $halls->first()->rows }}">
+                        <input type="text" class="conf-step__input" id="hall-rows" placeholder="10">
                     </label>
                     <span class="multiplier">×</span>
                     <label class="conf-step__label">Мест, шт
-                        <input type="text" class="conf-step__input" name="seats_per_row" value="{{ $halls->first()->seats_per_row }}">
+                        <input type="text" class="conf-step__input" id="hall-seats" placeholder="8">
                     </label>
                 </div>
 
@@ -91,18 +90,20 @@
                         @foreach($halls->first()->seats->groupBy('row_number') as $row => $seats)
                             <div class="conf-step__row">
                                 @foreach($seats as $seat)
-                                    <span class="conf-step__chair conf-step__chair_{{ $seat->type }}" data-seat-id="{{ $seat->id }}"></span>
+                                    <span class="conf-step__chair conf-step__chair_{{ $seat->type }}"></span>
                                 @endforeach
                             </div>
                         @endforeach
                     </div>
                 </div>
 
-                <fieldset class="conf-step__buttons text-center">
-                    <button class="conf-step__button conf-step__button-regular" type="reset">Отмена</button>
-                    <button class="conf-step__button conf-step__button-accent" type="submit">Сохранить</button>
-                </fieldset>
-            </form>
+                <div class="conf-step__buttons text-center">
+                    <button class="conf-step__button conf-step__button-regular" type="button" id="hall-cancel">Отмена</button>
+                    <button class="conf-step__button conf-step__button-accent" type="button" id="hall-save">Сохранить</button>
+                </div>
+            @else
+                <p class="conf-step__paragraph">Нет доступных залов. Создайте зал, чтобы продолжить конфигурацию.</p>
+            @endif
         </div>
     </section>
 
@@ -112,13 +113,17 @@
             <h2 class="conf-step__title">Конфигурация цен</h2>
         </header>
         <div class="conf-step__wrapper">
-            <form id="price-config" method="POST" action="{{ route('prices.update', $halls->first()) }}">
-                @csrf
+            @if($halls->isNotEmpty())
                 <p class="conf-step__paragraph">Выберите зал для конфигурации:</p>
                 <ul class="conf-step__selectors-box">
                     @foreach($halls as $hall)
                         <li>
-                            <input type="radio" class="conf-step__radio" name="hall_id" value="{{ $hall->id }}" {{ $loop->first ? 'checked' : '' }}>
+                            <input type="radio"
+                                   class="conf-step__radio"
+                                   name="prices-hall"
+                                   data-price-id="{{ $hall->id }}"
+                                   value="{{ $hall->id }}" {{ $loop->first ? 'checked' : '' }}
+                            >
                             <span class="conf-step__selector">{{ $hall->name }}</span>
                         </li>
                     @endforeach
@@ -127,22 +132,24 @@
                 <p class="conf-step__paragraph">Установите цены для типов кресел:</p>
                 <div class="conf-step__legend">
                     <label class="conf-step__label">Цена, рублей
-                        <input type="text" name="standard_price" class="conf-step__input" value="{{ $halls->first()->price->standard_price ?? '' }}">
-                        за <span class="conf-step__chair conf-step__chair_standart"></span> обычные кресла
+                        <input type="text" class="conf-step__input" id="standart_price">
                     </label>
+                    за <span class="conf-step__chair conf-step__chair_standart"></span> обычные кресла
                 </div>
                 <div class="conf-step__legend">
                     <label class="conf-step__label">Цена, рублей
-                        <input type="text" name="vip_price" class="conf-step__input" value="{{ $halls->first()->price->vip_price ?? '' }}">
-                        за <span class="conf-step__chair conf-step__chair_vip"></span> VIP кресла
+                        <input type="text" class="conf-step__input" id="vip_price">
                     </label>
+                    за <span class="conf-step__chair conf-step__chair_vip"></span> VIP кресла
                 </div>
 
                 <fieldset class="conf-step__buttons text-center">
-                    <button class="conf-step__button conf-step__button-regular" type="reset">Отмена</button>
-                    <button class="conf-step__button conf-step__button-accent" type="submit">Сохранить</button>
+                    <button class="conf-step__button conf-step__button-regular" type="button" id="price-cancel">Отмена</button>
+                    <button class="conf-step__button conf-step__button-accent" type="button" id="price-save">Сохранить</button>
                 </fieldset>
-            </form>
+            @else
+                <p class="conf-step__paragraph">Сначала создайте зал, чтобы настроить цены.</p>
+            @endif
         </div>
     </section>
 
@@ -157,17 +164,19 @@
             </p>
 
             <div class="conf-step__movies" id="movies-container">
-                @foreach($movies as $movie)
+                @forelse($movies as $movie)
                     <div class="conf-step__movie" data-movie-id="{{ $movie->id }}">
                         <img class="conf-step__movie-poster" src="{{ asset('i/' . $movie->poster_url) }}" alt="poster">
                         <h3 class="conf-step__movie-title">{{ $movie->title }}</h3>
                         <p class="conf-step__movie-duration">{{ $movie->duration }} минут</p>
                     </div>
-                @endforeach
+                @empty
+                    <p>Нет добавленных фильмов</p>
+                @endforelse
             </div>
 
             <div class="conf-step__seances">
-                @foreach($halls as $hall)
+                @forelse($halls as $hall)
                     <div class="conf-step__seances-hall">
                         <h3 class="conf-step__seances-title">{{ $hall->name }}</h3>
                         <div class="conf-step__seances-timeline">
@@ -183,7 +192,9 @@
                             @endforeach
                         </div>
                     </div>
-                @endforeach
+                @empty
+                    <p>Нет доступных залов для отображения сеансов.</p>
+                @endforelse
             </div>
 
             <fieldset class="conf-step__buttons text-center">
@@ -200,16 +211,13 @@
         </header>
         <div class="conf-step__wrapper text-center">
             <p class="conf-step__paragraph">Всё готово, теперь можно:</p>
-            <form method="POST" action="{{ route('open.sales') }}">
-                @csrf
-                <button class="conf-step__button conf-step__button-accent" id="open-sales">Открыть продажу билетов</button>
-            </form>
+            <button class="conf-step__button conf-step__button-accent" id="open-sales">Открыть продажу билетов</button>
         </div>
     </section>
 </main>
 
-<script src="{{ asset('admin/js/accordeon.js') }}"></script>
-<script src="{{ asset('admin/js/admin.js') }}"></script>
+<script src="{{ asset('admin-assets/js/accordeon.js') }}"></script>
+<script type="module" src="{{ asset('admin-assets/js/app.js') }}"></script>
 
 </body>
 </html>

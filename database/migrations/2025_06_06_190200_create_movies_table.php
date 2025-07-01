@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->text('description');
-            $table->unsignedSmallInteger('duration');
+            $table->unsignedSmallInteger('duration'); // в минутах
             $table->string('poster_url')->nullable();
             $table->timestamps();
         });

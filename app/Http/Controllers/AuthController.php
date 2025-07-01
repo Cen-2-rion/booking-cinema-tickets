@@ -23,12 +23,10 @@ class AuthController extends Controller
 
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
-            return redirect()->intended('/admin'); // Перенаправляем в админку
+            return redirect()->intended('/admin');
         }
 
-        return back()->withErrors([
-            'email' => 'Неверные учетные данные.',
-        ]);
+        return back()->with('error', 'Неверные учетные данные.');
     }
 
     // Выход
@@ -36,6 +34,6 @@ class AuthController extends Controller
     {
         Auth::logout();
         $request->session()->invalidate();
-        return redirect('/');
+        return redirect('/login');
     }
 }
