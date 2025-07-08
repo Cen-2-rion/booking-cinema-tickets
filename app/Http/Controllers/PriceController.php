@@ -14,12 +14,12 @@ class PriceController extends Controller
             'vip_price' => 'required|integer|min:0',
         ]);
 
-        $hall->price()->updateOrCreate(
+        $price = $hall->price()->updateOrCreate(
             ['hall_id' => $hall->id],
-            ['standart_price' => $validated['standart_price'], 'vip_price' => $validated['vip_price']]
+            $validated
         );
 
-        return response()->json(['success' => true]);
+        return response()->json($price);
     }
 
     public function show(Hall $hall)

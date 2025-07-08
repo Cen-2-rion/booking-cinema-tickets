@@ -11,8 +11,8 @@ export function sales(csrf) {
             headers: { 'X-CSRF-TOKEN': csrf }
         })
             .then(response  => {
-                if (!response .ok) throw new Error('Ошибка при открытии/закрытии продаж');
-                return response .json();
+                if (!response.ok) throw new Error('Ошибка при открытии/закрытии продаж');
+                return response.json();
             })
             .then(data => {
                 if (data.success) {

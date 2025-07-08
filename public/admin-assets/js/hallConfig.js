@@ -6,9 +6,12 @@ export function hallConfig(csrf) {
     const cancelButton = document.getElementById('hall-cancel');
     const radios = document.querySelectorAll('input[name="chairs-hall"]');
     let selectedId = document.querySelector('input[name="chairs-hall"]:checked').value;
+    let seatClickHandler;
 
     // Генерация мест по умолчанию
     function generateDefaultSeats(rows, seatsPerRow) {
+        if (seatClickHandler) wrapper.removeEventListener('click', seatClickHandler);
+
         wrapper.innerHTML = '';
         for (let row = 1; row <= rows; row++) {
             const rowDiv = document.createElement('div');
@@ -24,12 +27,15 @@ export function hallConfig(csrf) {
 
             wrapper.appendChild(rowDiv);
         }
+
+        attachSeatToggleHandler();
     }
 
     // Переключение типа кресла
     function attachSeatToggleHandler() {
-        wrapper.addEventListener('click', e => {
+        seatClickHandler = function (e) {
             if (!e.target.classList.contains('conf-step__chair')) return;
+
             const seat = e.target;
             if (seat.classList.contains('conf-step__chair_standart')) {
                 seat.classList.replace('conf-step__chair_standart', 'conf-step__chair_vip');
@@ -38,36 +44,36 @@ export function hallConfig(csrf) {
             } else {
                 seat.classList.replace('conf-step__chair_disabled', 'conf-step__chair_standart');
             }
-        });
+        }
+
+        wrapper.addEventListener('click', seatClickHandler);
     }
 
     // Обновление схемы при изменении инпутов
     function updateScheme() {
         const rows = parseInt(rowsInput.value, 10);
         const seats = parseInt(seatsInput.value, 10);
-        if (rows > 0 && seats > 0) {
-            generateDefaultSeats(rows, seats);
-        }
+
+        if (rows > 0 && seats > 0) generateDefaultSeats(rows, seats);
     }
 
     // Получение текущей схемы мест
     function getHallSeats() {
         const seats = [];
-        wrapper.querySelectorAll('.conf-step__row').forEach((rowEl, r) => {
-            rowEl.querySelectorAll('.conf-step__chair').forEach((seatEl, s) => {
-                const type = seatEl.classList.contains('conf-step__chair_vip')
-                    ? 'vip'
-                    : seatEl.classList.contains('conf-step__chair_disabled')
-                        ? 'disabled'
-                        : 'standart';
 
-                seats.push({
-                    row_number: r + 1,
-                    seat_number: s + 1,
-                    type
-                });
-            });
+        wrapper.querySelectorAll('.conf-step__chair').forEach(seatEl => {
+            const type = seatEl.classList.contains('conf-step__chair_vip')
+                ? 'vip'
+                : seatEl.classList.contains('conf-step__chair_disabled')
+                    ? 'disabled'
+                    : 'standart';
+
+            const row_number = parseInt(seatEl.dataset.row, 10);
+            const seat_number = parseInt(seatEl.dataset.seat, 10);
+
+            seats.push({ row_number, seat_number, type });
         });
+
         return seats;
     }
 
@@ -83,6 +89,8 @@ export function hallConfig(csrf) {
                 rowsInput.value = data.rows;
                 seatsInput.value = data.seats_per_row;
 
+                if (seatClickHandler) wrapper.removeEventListener('click', seatClickHandler);
+
                 wrapper.innerHTML = '';
                 data.seats.forEach(row => {
                     const rowDiv = document.createElement('div');
@@ -91,6 +99,8 @@ export function hallConfig(csrf) {
                     row.forEach(seat => {
                         const seatSpan = document.createElement('span');
                         seatSpan.className = `conf-step__chair conf-step__chair_${seat.type}`;
+                        seatSpan.dataset.row = seat.row_number;
+                        seatSpan.dataset.seat = seat.seat_number;
                         rowDiv.appendChild(seatSpan);
                     });
 
@@ -103,9 +113,7 @@ export function hallConfig(csrf) {
     rowsInput.addEventListener('input', updateScheme);
     seatsInput.addEventListener('input', updateScheme);
 
-    attachSeatToggleHandler();
-
-    // if (selectedId) loadHallConfig(selectedId);
+    if (selectedId) loadHallConfig(selectedId);
 
     radios.forEach(radio => {
         radio.addEventListener('change', () => loadHallConfig(radio.value));

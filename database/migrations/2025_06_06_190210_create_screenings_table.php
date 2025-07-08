@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('movie_id')->constrained()->onDelete('cascade');
             $table->foreignId('hall_id')->constrained()->onDelete('cascade');
             $table->dateTime('start_time');
+            $table->dateTime('end_time');
             $table->timestamps();
 
             $table->unique(['hall_id', 'start_time']); // уникальность по залу и времени

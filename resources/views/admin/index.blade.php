@@ -132,13 +132,13 @@
                 <p class="conf-step__paragraph">Установите цены для типов кресел:</p>
                 <div class="conf-step__legend">
                     <label class="conf-step__label">Цена, рублей
-                        <input type="text" class="conf-step__input" id="standart_price">
+                        <input type="text" class="conf-step__input" id="standart_price" placeholder="0">
                     </label>
                     за <span class="conf-step__chair conf-step__chair_standart"></span> обычные кресла
                 </div>
                 <div class="conf-step__legend">
                     <label class="conf-step__label">Цена, рублей
-                        <input type="text" class="conf-step__input" id="vip_price">
+                        <input type="text" class="conf-step__input" id="vip_price" placeholder="0">
                     </label>
                     за <span class="conf-step__chair conf-step__chair_vip"></span> VIP кресла
                 </div>
@@ -159,48 +159,44 @@
             <h2 class="conf-step__title">Сетка сеансов</h2>
         </header>
         <div class="conf-step__wrapper">
-            <p class="conf-step__paragraph">
-                <button class="conf-step__button conf-step__button-accent" id="add-movie">Добавить фильм</button>
-            </p>
+            @if($halls->isNotEmpty())
+                <p class="conf-step__paragraph">
+                    <button class="conf-step__button conf-step__button-accent" id="add-movie">Добавить фильм</button>
+                </p>
 
-            <div class="conf-step__movies" id="movies-container">
-                @forelse($movies as $movie)
-                    <div class="conf-step__movie" data-movie-id="{{ $movie->id }}">
-                        <img class="conf-step__movie-poster" src="{{ asset('i/' . $movie->poster_url) }}" alt="poster">
-                        <h3 class="conf-step__movie-title">{{ $movie->title }}</h3>
-                        <p class="conf-step__movie-duration">{{ $movie->duration }} минут</p>
-                    </div>
-                @empty
-                    <p>Нет добавленных фильмов</p>
-                @endforelse
-            </div>
-
-            <div class="conf-step__seances">
-                @forelse($halls as $hall)
-                    <div class="conf-step__seances-hall">
-                        <h3 class="conf-step__seances-title">{{ $hall->name }}</h3>
-                        <div class="conf-step__seances-timeline">
-                            @foreach($hall->screenings as $screening)
-                                @php
-                                    $left = $screening->start_time->format('H') * 60 + $screening->start_time->format('i');
-                                    $width = $screening->movie->duration / 2;
-                                @endphp
-                                <div class="conf-step__seances-movie" style="width: {{ $width }}px; left: {{ $left }}px;" data-screening-id="{{ $screening->id }}">
-                                    <p class="conf-step__seances-movie-title">{{ $screening->movie->title }}</p>
-                                    <p class="conf-step__seances-movie-start">{{ $screening->start_time->format('H:i') }}</p>
-                                </div>
-                            @endforeach
+                <div class="conf-step__movies" id="movies-container">
+                    @foreach($movies as $movie)
+                        <div class="conf-step__movie" data-movie-id="{{ $movie->id }}">
+                            <img class="conf-step__movie-poster" src="/admin-assets/i/poster.png" alt="poster">
+                            <h3 class="conf-step__movie-title">{{ $movie->title }}</h3>
+                            <p class="conf-step__movie-duration">{{ $movie->duration }} минут</p>
                         </div>
-                    </div>
-                @empty
-                    <p>Нет доступных залов для отображения сеансов.</p>
-                @endforelse
-            </div>
+                    @endforeach
+                </div>
 
-            <fieldset class="conf-step__buttons text-center">
-                <button class="conf-step__button conf-step__button-regular">Отмена</button>
-                <button class="conf-step__button conf-step__button-accent" id="save-schedule">Сохранить</button>
-            </fieldset>
+                <div class="conf-step__seances">
+                    @foreach($halls as $hall)
+                        <div class="conf-step__seances-hall" data-hall-id="{{ $hall->id }}">
+                            <h3 class="conf-step__seances-title">{{ $hall->name }}</h3>
+                            <div class="conf-step__seances-timeline">
+                                @foreach($hall->screenings as $screening)
+                                    <div class="conf-step__seances-movie" data-screening-id="{{ $screening->id }}">
+                                        <p class="conf-step__seances-movie-title">{{ $screening->movie->title }}</p>
+                                        <p class="conf-step__seances-movie-start">{{ $screening->start_time->format('H:i') }}</p>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+
+                <fieldset class="conf-step__buttons text-center">
+                    <button class="conf-step__button conf-step__button-regular" id="schedule-cancel">Отмена</button>
+                    <button class="conf-step__button conf-step__button-accent" id="schedule-save">Сохранить</button>
+                </fieldset>
+            @else
+                <p class="conf-step__paragraph">Создайте зал, чтобы добавить фильмы и настроить расписание.</p>
+            @endif
         </div>
     </section>
 

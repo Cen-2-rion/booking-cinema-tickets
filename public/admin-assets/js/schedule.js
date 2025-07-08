@@ -1,66 +1,153 @@
 export function schedule(csrf) {
-    let dragMovie = null;
+    const saveButton = document.getElementById('schedule-save');
+    const cancelButton = document.getElementById('schedule-cancel');
+    let draggedMovie = null;
 
-    document.querySelectorAll('.conf-step__movie').forEach(movie => {
-        movie.draggable = true;
-
-        movie.addEventListener('dragstart', () => {
-            dragMovie = movie;
+    // Drag & Drop для фильмов
+    window.enableDragging = function () {
+        document.querySelectorAll('.conf-step__movie').forEach(movie => {
+            movie.setAttribute('draggable', true);
+            movie.addEventListener('dragstart', dragStartHandler);
         });
-    });
+    }
 
-    // Drag & Drop расписания
-    document.querySelectorAll('.conf-step__seances-timeline').forEach(timeline => {
-        timeline.addEventListener('dragover', e => e.preventDefault());
+    function dragStartHandler(e) {
+        const movie = e.currentTarget;
+        draggedMovie = {
+            id: movie.dataset.movieId,
+            title: movie.querySelector('.conf-step__movie-title').textContent,
+            duration: parseInt(movie.querySelector('.conf-step__movie-duration').textContent),
+        };
+    }
 
-        timeline.addEventListener('drop', e => {
-            e.preventDefault();
-            if (!dragMovie) return;
+    function dragOverHandler(e) {
+        e.preventDefault();
+    }
 
-            const movieId = dragMovie.dataset.movieId;
-            const title = dragMovie.querySelector('.conf-step__movie-title').textContent;
-            const duration = parseInt(dragMovie.querySelector('.conf-step__movie-duration').textContent);
-            const left = e.offsetX;
+    function dropHandler(e) {
+        e.preventDefault();
+        if (!draggedMovie) return;
 
-            const startMinutes = Math.floor(left);
-            const h = String(Math.floor(startMinutes / 60)).padStart(2, '0');
-            const m = String(startMinutes % 60).padStart(2, '0');
+        const timeline = e.currentTarget;
+        const rect = timeline.getBoundingClientRect();
+        const offsetX = e.clientX - rect.left;
 
-            const node = document.createElement('div');
-            node.className = 'conf-step__seances-movie';
-            node.style.width = `${duration / 2}px`;
-            node.style.left = `${left}px`;
-            node.dataset.movieId = movieId;
-            node.innerHTML = `
-        <p class="conf-step__seances-movie-title">${title}</p>
-        <p class="conf-step__seances-movie-start">${h}:${m}</p>
-      `;
-            timeline.appendChild(node);
+        // Вычисляем ширину и ограничиваем по правому краю
+        const movieWidth = draggedMovie.duration * 0.5;
+        const maxLeft = 1440 * 0.5 - movieWidth;
+
+        const left = Math.max(0, Math.min(offsetX, maxLeft));
+        const newStartMin = Math.round(left / 0.5);
+        const newEndMin = newStartMin + draggedMovie.duration;
+
+        // Проверка на пересечения
+        const isOverlap = Array.from(timeline.querySelectorAll('.conf-step__seances-movie')).some(ext => {
+            const extStart = parseInt(ext.dataset.start);
+            const extEnd = parseInt(ext.dataset.end);
+            return !(newEndMin <= extStart || newStartMin >= extEnd);
         });
-    });
 
-    // Сохранение расписания
-    const saveBtn = document.getElementById('save-schedule');
-    if (!saveBtn) return;
+        if (isOverlap) {
+            alert('Нельзя наложить на другой сеанс');
+            return;
+        }
 
-    saveBtn.addEventListener('click', () => {
+        const movie = document.createElement('div');
+        movie.className = 'conf-step__seances-movie';
+        movie.style.left = `${newStartMin * 0.5}px`;
+        movie.style.width = `${draggedMovie.duration * 0.5}px`;
+        movie.dataset.movieId = draggedMovie.id;
+        movie.dataset.start = newStartMin;
+        movie.dataset.end = newEndMin;
+
+        const hours = String(Math.floor(newStartMin / 60)).padStart(2, '0');
+        const minutes = String(newStartMin % 60).padStart(2, '0');
+        const startTime = `${hours}:${minutes}`;
+
+        movie.innerHTML = `
+            <p class="conf-step__seances-movie-title">${draggedMovie.title}</p>
+            <p class="conf-step__seances-movie-start">${startTime}</p>
+        `;
+
+        movie.addEventListener('dblclick', () => movie.remove());
+
+        timeline.appendChild(movie);
+    }
+
+    function initDropZones() {
+        document.querySelectorAll('.conf-step__seances-timeline').forEach(timeline => {
+            timeline.addEventListener('dragover', dragOverHandler);
+            timeline.addEventListener('drop', dropHandler);
+        });
+    }
+
+    // Загрузка сохранённого расписания
+    function loadSchedule() {
+        fetch('/admin/api/screenings')
+            .then(response => response.json())
+            .then(data => {
+                document.querySelectorAll('.conf-step__seances-hall').forEach(hall => {
+                    const hallId = hall.dataset.hallId;
+                    const timeline = hall.querySelector('.conf-step__seances-timeline');
+                    timeline.innerHTML = '';
+
+                    (data[hallId] || []).forEach(screening => {
+                        const [h, m] = screening.start_time.split(':');
+                        const [eh, em] = screening.end_time.split(':');
+
+                        const start = parseInt(h) * 60 + parseInt(m);
+                        const end = parseInt(eh) * 60 + parseInt(em);
+                        const width = (end - start) * 0.5;
+
+                        const movie = document.createElement('div');
+                        movie.className = 'conf-step__seances-movie';
+                        movie.style.left = `${start * 0.5}px`;
+                        movie.style.width = `${width}px`;
+                        movie.dataset.movieId = screening.movie_id;
+                        movie.dataset.start = start;
+                        movie.dataset.end = end;
+
+                        movie.innerHTML = `
+                            <p class="conf-step__seances-movie-title">${screening.title}</p>
+                            <p class="conf-step__seances-movie-start">${screening.start_time}</p>
+                        `;
+
+                        movie.addEventListener('dblclick', () => movie.remove());
+
+                        timeline.appendChild(movie);
+                    });
+                });
+            });
+    }
+
+    // Сохранение
+    saveButton.addEventListener('click', () => {
         const screenings = [];
+        const hallIds = [];
 
-        document.querySelectorAll('.conf-step__seances-hall').forEach(hallBlock => {
-            const hallName = hallBlock.querySelector('.conf-step__seances-title').textContent;
-            const hallInput = [...document.querySelectorAll('[name="hall_id_config"]')]
-                .find(input => input.nextElementSibling.textContent.trim() === hallName);
-            const hall_id = hallInput.value;
+        document.querySelectorAll('.conf-step__seances-hall').forEach(hall => {
+            const hallId = hall.dataset.hallId;
+            hallIds.push(hallId);
 
-            if (!hall_id) return;
+            const timeline = hall.querySelector('.conf-step__seances-timeline');
+            timeline.querySelectorAll('.conf-step__seances-movie').forEach(movieEl => {
+                const movieId = movieEl.dataset.movieId;
+                const start = movieEl.dataset.start;
+                const end = movieEl.dataset.end;
 
-            hallBlock.querySelectorAll('.conf-step__seances-movie').forEach(movieBlock => {
-                const movie_id = movieBlock.dataset.movieId;
-                const start_time = movieBlock.querySelector('.conf-step__seances-movie-start').textContent;
+               if (movieId && start && end) {
+                    const startHours = String(Math.floor(start / 60)).padStart(2, '0');
+                    const startMinutes = String(start % 60).padStart(2, '0');
+                    const endHours = String(Math.floor(end / 60)).padStart(2, '0');
+                    const endMinutes = String(end % 60).padStart(2, '0');
 
-                if (movie_id && start_time) {
-                    screenings.push({ hall_id, movie_id, start_time });
-                }
+                    screenings.push({
+                        hall_id: hallId,
+                        movie_id: movieId,
+                        start_time: `${startHours}:${startMinutes}`,
+                        end_time: `${endHours}:${endMinutes}`,
+                    });
+               }
             });
         });
 
@@ -70,7 +157,15 @@ export function schedule(csrf) {
                 'Content-Type': 'application/json',
                 'X-CSRF-TOKEN': csrf,
             },
-            body: JSON.stringify({ screenings })
-        }).then(response => response.ok ? alert('Расписание сохранено') : alert('Ошибка при сохранении расписания'));
+            body: JSON.stringify({ screenings, hall_ids: hallIds }),
+        })
+            .then(response => response.ok ? alert('Расписание сохранено!') : alert('Ошибка при сохранении'));
     });
+
+    // Отмена
+    cancelButton.addEventListener('click', loadSchedule);
+
+    enableDragging();
+    initDropZones();
+    loadSchedule();
 }

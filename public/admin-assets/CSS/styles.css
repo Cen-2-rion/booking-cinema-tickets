@@ -527,7 +527,7 @@ input[type='radio'], input[type='submit'], button, .conf-step__header, select {
         transition: .3s all ease; }
 
 /*==================================*/
-        
+
 .conf-step__wrapper__save-status {
   padding-top: 10px;
   font-size: 15px;
@@ -543,7 +543,7 @@ textarea.conf-step__input {
   min-height: 80px;
   max-height: 80px;
   min-width: 100%;
-  max-width: 100%; 
+  max-width: 100%;
 }
 
 .conf-step__movie > a {

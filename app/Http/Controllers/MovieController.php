@@ -13,12 +13,11 @@ class MovieController extends Controller
             'title' => 'required|string|max:255',
             'description' => 'required|string',
             'duration' => 'required|integer|min:1',
-            'poster_url' => 'nullable|string',
         ]);
 
-        Movie::create($validated);
+        $movie = Movie::create($validated);
 
-        return redirect()->route('admin.index')->with('success', 'Фильм добавлен!');
+        return response()->json($movie);
     }
 
     public function update(Request $request, Movie $movie)
@@ -27,18 +26,17 @@ class MovieController extends Controller
             'title' => 'required|string|max:255',
             'description' => 'required|string',
             'duration' => 'required|integer|min:1',
-            'poster_url' => 'nullable|string',
         ]);
 
         $movie->update($validated);
 
-        return redirect()->route('admin.index')->with('success', 'Фильм обновлен!');
+        return response()->json($movie);
     }
 
     public function destroy(Movie $movie)
     {
         $movie->delete();
 
-        return redirect()->route('admin.index')->with('success', 'Фильм удален!');
+        return response()->json(['success' => true]);
     }
 }

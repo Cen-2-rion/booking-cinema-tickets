@@ -33,7 +33,7 @@ class HallController extends Controller
             }
         }
 
-        return redirect()->route('admin.index')->with('success', 'Зал создан!');
+        return response()->json($hall);
     }
 
     public function show(Hall $hall)
@@ -58,11 +58,11 @@ class HallController extends Controller
 
         $seatsArray = array_values($groupedSeats);
 
-        return [
+        return response()->json([
             'rows' => $hall->rows,
             'seats_per_row' => $hall->seats_per_row,
             'seats' => $seatsArray,
-        ];
+        ]);
     }
 
     public function update(Request $request, Hall $hall)
@@ -86,7 +86,7 @@ class HallController extends Controller
             $hall->seats()->create($seat);
         }
 
-        return response()->json(['success' => true]);
+        return response()->json($hall);
     }
 
     public function destroy(Hall $hall)

@@ -44,7 +44,8 @@ Route::middleware('auth')->prefix('admin')->group(function () {
     Route::resource('movies', MovieController::class)->except(['show', 'create', 'edit']);
 
     // Сеансы
-    Route::resource('screenings', ScreeningController::class)->only(['store', 'destroy']);
+    Route::resource('screenings', ScreeningController::class)->only(['store']);
+    Route::get('/api/screenings', [ScreeningController::class, 'index']);
 
     // Открытие продаж
     Route::post('/open-sales', [AdminController::class, 'openSales']);

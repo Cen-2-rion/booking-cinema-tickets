@@ -8,7 +8,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Screening extends Model
 {
-    protected $fillable = ['movie_id', 'hall_id', 'start_time'];
+    protected $fillable = ['movie_id', 'hall_id', 'start_time', 'end_time'];
+    protected $casts = ['start_time' => 'datetime', 'end_time' => 'datetime'];
 
     public function movie(): BelongsTo
     {
