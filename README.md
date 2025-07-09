@@ -1,61 +1,177 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+## Запуск проекта
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+### 1. Клонирование репозитория
 
-## About Laravel
+```bash
+git clone git@github.com:Cen-2-rion/booking-cinema-tickets.git
+cd booking-cinema-tickets
+```
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+### 2. Установка зависимостей
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+```
+composer install
+```
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### 3. Создание .env
 
-## Learning Laravel
+```bash
+cp .env.example .env
+```
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+Затем открыть `.env` и изменить параметры подключения к базе:
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+```
+DB_CONNECTION=sqlite
+DB_DATABASE=database\database.sqlite
+```
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### 4. Создание файла базы данных
 
-## Laravel Sponsors
+```bash
+mkdir -p database
+touch database/database.sqlite
+```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### 5. Генерация ключа приложения
 
-### Premium Partners
+```bash
+php artisan key:generate
+```
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+### 6. Миграции и сиды
 
-## Contributing
+```bash
+php artisan migrate --seed
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+**Данные для входа в админку**
 
-## Code of Conduct
+```
+Email: admin@cinema.ru
+Пароль: pass12345
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### 7. Запуск локального сервера
 
-## Security Vulnerabilities
+```bash
+php artisan serve
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Перейдите в браузере: http://localhost:8000/login
 
-## License
+---
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+### Технические особенности
+
+* PHP: 8.2+
+
+* Фреймворк: Laravel 10.x
+
+* База данных: SQLite (хранится в database/database.sqlite)
+
+* Фронтенд: HTML/CSS + Vanilla JS (без фреймворков)
+
+* Авторизация: простая авторизация администратора
+
+* Пароли: хешируются с использованием Laravel Hash
+
+* UI: предоставленная вёрстка без изменений, адаптирована под Laravel Blade
+
+### Основные сущности
+
+    Пользователь (User) — только администратор.
+
+    Кинозал (Hall) — имеет название, размеры (ряды/места), конфигурацию мест и цены.
+
+    Место (Seat) — обычное, VIP, недоступное.
+
+    Цены (Price) — набор цен для конкретного зала: цена за обычное и VIP место.
+
+    Фильм (Movie) — название, описание, длительность.
+
+    Сеанс (Screening) — привязан к фильму и залу, содержит время начала и окончания.
+
+    Билет (Ticket) — содержит информацию о месте, сеансе и QR-код брони.
+
+### Работа с залами и местами
+
+    Создание залов: через интерфейс администратора.
+
+    Конфигурация мест: изменение типа мест вручную (обычное, VIP, недоступное).
+
+    Настройка цен: отдельно для обычных и VIP-мест.
+
+### Работа с фильмами
+
+    Создание фильма: через интерфейс, с вводом названия, описания и длительности.
+
+    Удаление фильма: двойной клик по карточке фильма в списке.
+
+### Расписание
+
+    Добавление: перетаскиванием фильма в сетку расписания.
+
+    Удаление: двойной клик по сеансу.
+
+    Проверки:
+
+        Сеанс не выходит за пределы таймлайна.
+
+        Сеанс не пересекается с другими.
+
+    Сохранение расписания: сеансы зала полностью перезаписываются.
+
+    Загрузка расписания:
+
+        Отмена изменений: загружает актуальное расписание с сервера.
+
+        Пустая сетка: поддерживается сохранение пустого расписания.
+
+# Дипломный проект по профессии «Веб-разработчик»
+
+Дипломный проект представляет собой создание сайта для бронирования онлайн билетов в кинотеатр и разработка информационной системы для администрирования залов, сеансов и предварительного бронирования билетов.
+
+### Студенту даются компоненты системы
+* [Вёрстка](./sources/layouts.zip).
+
+## Задачи
+* Разработать сайт бронирования билетов онлайн.
+* Разработать административную часть сайта.
+
+## Сущности
+
+1. **Кинозал**. Помещение, в котором демонстрируются фильмы. Режим работы определяется расписанием на день. Зал — прямоугольное помещение, состоит из N х M различных зрительских мест.
+2. **Зрительское место**. Место в кинозале. Есть два вида: VIP и обычное. 
+3. **Фильм**. Информация о фильме заполняется администратором. Фильм связан с сеансом в кинозале.
+4. **Сеанс**. Временной промежуток, во время которого в кинозале будет показываться фильм. На сеанс могут быть забронированы билеты.
+5. **Билет**. QR-код c уникальным кодом бронирования, в котором обязательно указаны место, ряд, сеанс. Билет действителен строго на свой сеанс. Для генерации QR-кода можно использовать [сервис](http://phpqrcode.sourceforge.net/). 
+
+## Роли пользователей системы
+* Администратор — авторизованный пользователь.
+* Гость — неавторизованный посетитель сайта.
+
+### Возможности администратора
+* Создание или редактирование залов.
+* Создание или редактирование списка фильмов.
+* Настройка цен.
+* Создание или редактирование расписания сеансов фильмов.
+
+### Возможности гостя
+* Просмотр расписания.
+* Просмотр списка фильмов.
+* Выбор места в кинозале.
+* Бронирование билета на конкретную дату.
+
+## Важные моменты
+* Должна присутствовать валидация входных данных на стороне сервера.
+* Пароль должен храниться в захешированном виде и при аутентификации должна быть проверка хеша пользователя.
+
+## Этапы разработки
+1. Продумайте архитектуру будущего веб-приложения. Выберите вариант реализации: SPA+API, Laravel App или Base PHP.
+Вы можете базироваться на основе фреймворков (Laravel, Yii2), использовать свободные библиотеки для сборки собственного приложения либо написать всё самостоятельно.
+2. Проанализируйте задание, составьте план. Когда определитесь, что и как хотите делать, вы можете обсудить план с дипломным руководителем.
+3. Разработайте административную и пользовательскую часть веб-приложения.
+
+### Что в итоге должно получиться
+В результате работы должен получиться git-репозиторий, содержащий в себе необходимые файлы проекта и файл ReadMe. В нём должна быть инструкция, как запустить ваш проект, технические особенности: версия php, процедура миграции базы данных и другое.
