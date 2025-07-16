@@ -75,27 +75,27 @@ input[type='radio'], input[type='submit'], button, .conf-step__header, select {
 .page-header {
   color: $white;
   text-transform: uppercase;
-
+  
   .page-header__title {
     margin: 0;
     font-weight: 900;
     font-size: 3.4rem;
-
+    
     span {
       font-weight: 100;
     }
   }
-
+  
   .page-header__subtitle {
     font-size: 1rem;
     letter-spacing: 0.46em;
-  }
+  } 
 }
 
 .conf-step {
   position: relative;
   background-color: rgba(234, 233, 235, 0.95);
-
+  
   &::before {
     content: '';
     position: absolute;
@@ -103,10 +103,10 @@ input[type='radio'], input[type='submit'], button, .conf-step__header, select {
     margin-left: -1px;
     top: 0;
     bottom: 0;
-    display: block;
+    display: block;    
     width: 2px;
     background-color: $lightlilac;
-  }
+  }  
 }
 
 .conf-step__header_opened + .conf-step__wrapper {
@@ -128,8 +128,8 @@ input[type='radio'], input[type='submit'], button, .conf-step__header, select {
   color: $white;
   transition-property: all;
   transition-duration: .6s;
-  transition-timing-function: ease;
-
+  transition-timing-function: ease;  
+  
   &::before {
     content: '';
     position: absolute;
@@ -137,11 +137,11 @@ input[type='radio'], input[type='submit'], button, .conf-step__header, select {
     margin-left: -1px;
     top: 0;
     bottom: 0;
-    display: block;
+    display: block;    
     width: 2px;
     background-color: $lightlilac;
   }
-
+  
   &::after {
     content: '';
     position: absolute;
@@ -153,12 +153,12 @@ input[type='radio'], input[type='submit'], button, .conf-step__header, select {
     background-image: url('../i/switch.png');
     background-size: 24px 16px;
   }
-
+  
   &:hover,
   &:focus {
     background-color: #89639e;
-  }
-
+  }  
+  
   .conf-step__title {
     font-size: 2.2rem;
     font-weight: 700;
@@ -166,15 +166,15 @@ input[type='radio'], input[type='submit'], button, .conf-step__header, select {
     counter-increment: num;
     transition-property: all;
     transition-duration: .6s;
-    transition-timing-function: ease;
-
+    transition-timing-function: ease;    
+    
     &::before {
       content: counter(num);
       position: absolute;
       display: block;
       left: $colwidth + $gapwidth;
       top: 50%;
-      margin-left: -22px;
+      margin-left: -22px;      
       margin-top: -22px;
       width: 44px;
       height: 44px;
@@ -189,7 +189,7 @@ input[type='radio'], input[type='submit'], button, .conf-step__header, select {
       letter-spacing: normal;
     }
   }
-
+    
 }
 
 .conf-step__header:hover {
@@ -198,7 +198,7 @@ input[type='radio'], input[type='submit'], button, .conf-step__header, select {
     transition-property: all;
     transition-duration: .6s;
     transition-timing-function: ease;
-
+    
     &::before {
       letter-spacing: normal;
     }
@@ -208,16 +208,16 @@ input[type='radio'], input[type='submit'], button, .conf-step__header, select {
 .conf-step:first-of-type .conf-step__header {
   &::before {
     top: 50%;
-  }
+  }  
 }
 
 .conf-step:last-of-type {
   .conf-step__header {
     &::before {
       bottom: 50%;
-    }
+    }  
   }
-
+  
   &::before {
     display: none;
   }
@@ -240,21 +240,21 @@ input[type='radio'], input[type='submit'], button, .conf-step__header, select {
   text-transform: uppercase;
   font-weight: 500;
   margin: 14px 0 5px 25px;
-
+  
   li {
     position: relative;
   }
-
+  
   li + li {
     margin-top: 10px;
   }
-
+  
   li::before {
     content: '–';
     position: absolute;
     left: -14px;
   }
-
+  
 }
 
 .conf-step__button, .login__button {
@@ -267,14 +267,14 @@ input[type='radio'], input[type='submit'], button, .conf-step__header, select {
   font-size: 1.4rem;
   transition-property: background-color;
   transition-duration: .5s;
-  transition-timing-function: ease;
-
+  transition-timing-function: ease;   
+  
   &:hover,
   &:focus{
     background-color: #EEEAF1;
-    outline: none;
+    outline: none;  
   }
-
+  
   &:active {
     position: relative;
     top: 2px;
@@ -282,11 +282,11 @@ input[type='radio'], input[type='submit'], button, .conf-step__header, select {
     color: $white;
     box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.75);
   }
-
+  
   & + & {
     margin-left: 12px;
   }
-
+  
 }
 
 .conf-step__buttons {
@@ -304,21 +304,21 @@ input[type='radio'], input[type='submit'], button, .conf-step__header, select {
   background-color: $green;
   padding: 12px 32px;
   margin-top: 17px;
-
+  
   &:hover,
   &:focus{
     background-color: #2FC9D2;
     outline: none;
   }
-
+  
   &:active {
     position: relative;
     top: 2px;
     background-color: #146C72;
     color: $white;
     box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.75);
-  }
-
+  }  
+  
 }
 
 .conf-step__button-trash {
@@ -326,7 +326,7 @@ input[type='radio'], input[type='submit'], button, .conf-step__header, select {
   width: 20px;
   height: 20px;
   vertical-align: text-top;
-
+  
   &::before {
     content: '';
     position: absolute;
@@ -338,28 +338,28 @@ input[type='radio'], input[type='submit'], button, .conf-step__header, select {
     background-position: 0 0;
     background-size: 24px 12px;
     background-repeat: no-repeat;
-  }
-
+  } 
+  
   &:active::before {
     background-position: -12px 0;
-  }
+  } 
 }
 
 .conf-step__legend {
   color: $grey;
   font-size: 1.4rem;
   margin-bottom: 12px;
-
+  
   .multiplier {
     font-family: monospace;
     font-size: 18px;
     padding: 0 10px;
   }
-
+  
   .conf-step__chair:not(:first-of-type) {
     margin-left: 20px;
-  }
-
+  }  
+  
 }
 
 .conf-step__hint {
@@ -379,7 +379,7 @@ input[type='radio'], input[type='submit'], button, .conf-step__header, select {
   :last-of-type {
     margin-bottom: 0;
   }
-
+    
   .conf-step__input {
     width: 100%;
   }
@@ -434,13 +434,13 @@ input[type='radio'], input[type='submit'], button, .conf-step__header, select {
   font-size: 0;
   list-style: none;
   margin-bottom: 15px;
-
+  
   li {
     position: relative;
     display: inline-block;
     font-size: 1.2rem;
-  }
-
+  }  
+  
   .conf-step__radio {
     position: absolute;
     top: 0;
@@ -451,8 +451,8 @@ input[type='radio'], input[type='submit'], button, .conf-step__header, select {
     width: 80px;
     height: 42px;
     opacity: 0;
-  }
-
+  }  
+  
   .conf-step__selector {
     position: relative;
     display: block;
@@ -467,9 +467,9 @@ input[type='radio'], input[type='submit'], button, .conf-step__header, select {
     transition-property: background-color;
     transition-duration: .5s;
     transition-timing-function: ease;
-    z-index: 5;
+    z-index: 5;  
   }
-
+  
   .conf-step__radio:checked + .conf-step__selector {
     background-color: $white;
     box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.24), 0px 2px 2px rgba(0, 0, 0, 0.24), 0px 0px 2px rgba(0, 0, 0, 0.12);
@@ -478,10 +478,10 @@ input[type='radio'], input[type='submit'], button, .conf-step__header, select {
     font-size: 1.4rem;
     z-index: 10;
   }
-
+  
   .conf-step__radio:hover + .conf-step__selector {
     background-color: rgba(255, 255, 255, 0.90);
-  }
+  }   
 }
 
 .conf-step__hall {
@@ -489,7 +489,7 @@ input[type='radio'], input[type='submit'], button, .conf-step__header, select {
   padding: 62px 32px 34px;
   border: 2px solid #000000;
   text-align: center;
-
+  
   &::before {
     content: ' экран';
     position: absolute;
@@ -500,26 +500,26 @@ input[type='radio'], input[type='submit'], button, .conf-step__header, select {
     letter-spacing: 1.2em;
     text-transform: uppercase;
   }
-
+  
   .conf-step__chair {
     cursor: pointer;
   }
-
+  
   .conf-step__hall-wrapper {
     display: inline-block;
-
+    
     .conf-step__row {
       font-size: 0;
     }
-
+    
     .conf-step__row + .conf-step__row {
       margin-top: 10px;
     }
-
+    
     .conf-step__chair + .conf-step__chair{
       margin-left: 10px;
     }
-
+    
   }
 }
 
@@ -527,7 +527,7 @@ input[type='radio'], input[type='submit'], button, .conf-step__header, select {
   display: flex;
   flex-wrap: wrap;
   align-items: flex-start;
-
+  
   .conf-step__movie {
     position: relative;
     width: calc((100% - 30px) / 3);
@@ -537,24 +537,24 @@ input[type='radio'], input[type='submit'], button, .conf-step__header, select {
     border: 1px solid rgba(0, 0, 0, 0.3);
     box-sizing: border-box;
     cursor: pointer;
-
-
+    
+    
     &:nth-of-type(3n + 2) {
       margin: 0 15px;
     }
-
+    
     &:nth-of-type(n + 4) {
       margin-top: 15px;
     }
-
+    
     @for $i from 1 to $colors {
       &:nth-of-type(#{$i}) {
         background-color:adjust-hue($startyellow, $i * $degrees);
       }
-    }
-
+    }    
+    
   }
-
+  
   .conf-step__movie-poster {
     position: absolute;
     top: 0;
@@ -562,12 +562,12 @@ input[type='radio'], input[type='submit'], button, .conf-step__header, select {
     width: 38px;
     height: 50px;
   }
-
+  
   .conf-step__movie-title {
     font-weight: 500;
     font-size: 1.4rem;
   }
-
+  
   .conf-step__movie-duration {
     font-size: 1.4rem;
     color: rgba(0, 0, 0, 0.7);
@@ -599,13 +599,13 @@ input[type='radio'], input[type='submit'], button, .conf-step__header, select {
   border: 1px solid rgba(0, 0, 0, 0.3);
   box-sizing: border-box;
   padding: 10px 2px 10px 10px;
-
+  
   .conf-step__seances-movie-title {
     overflow: hidden;
     line-height: 10px;
     height: 100%;
   }
-
+  
   .conf-step__seances-movie-start {
     position: absolute;
     bottom: -33px;
@@ -613,7 +613,7 @@ input[type='radio'], input[type='submit'], button, .conf-step__header, select {
     color: $grey;
     font-size: 1.2rem;
   }
-
+  
   &::before {
     content: '';
     position: absolute;
@@ -624,7 +624,7 @@ input[type='radio'], input[type='submit'], button, .conf-step__header, select {
     left: 0;
     background-color: $grey;
   }
-
+  
 }
 
 .login {
@@ -675,7 +675,7 @@ input[type='radio'], input[type='submit'], button, .conf-step__header, select {
   width: 100%;
   height: 100%;
   z-index: 100;
-
+  
   &__title {
     font-size: 2.2rem;
     font-weight: 700;
@@ -685,7 +685,7 @@ input[type='radio'], input[type='submit'], button, .conf-step__header, select {
   &.active {
     display: block;
 
-    background: rgba(0,0,0,0.7);
+    background: rgba(0,0,0,0.7);  
     animation: 0.5s ease-out 0s 1 darken;
 
     .popup__content {

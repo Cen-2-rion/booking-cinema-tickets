@@ -11,6 +11,12 @@
     <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900&amp;subset=cyrillic,cyrillic-ext,latin-ext" rel="stylesheet">
 </head>
 <body>
+
+@include('admin.popups.add-hall')
+@include('admin.popups.remove-hall')
+@include('admin.popups.add-film')
+@include('admin.popups.remove-film')
+
 <header class="page-header">
     <h1 class="page-header__title">Идём<span>в</span>кино</h1>
     <span class="page-header__subtitle">Администраторррская</span>
@@ -34,7 +40,7 @@
                 @forelse($halls as $hall)
                     <li>
                         {{ $hall->name }}
-                        <button class="conf-step__button conf-step__button-trash" data-hall-id="{{ $hall->id }}"></button>
+                        <button class="conf-step__button conf-step__button-trash" data-hall-id="{{ $hall->id }}" data-hall-name="{{ $hall->name }}"></button>
                     </li>
                 @empty
                     <li>Залов нет</li>
