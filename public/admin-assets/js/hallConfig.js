@@ -90,22 +90,28 @@ export function hallConfig(csrf) {
                 seatsInput.value = data.seats_per_row;
 
                 if (seatClickHandler) wrapper.removeEventListener('click', seatClickHandler);
-
                 wrapper.innerHTML = '';
-                data.seats.forEach(row => {
-                    const rowDiv = document.createElement('div');
-                    rowDiv.classList.add('conf-step__row');
 
-                    row.forEach(seat => {
-                        const seatSpan = document.createElement('span');
-                        seatSpan.className = `conf-step__chair conf-step__chair_${seat.type}`;
-                        seatSpan.dataset.row = seat.row_number;
-                        seatSpan.dataset.seat = seat.seat_number;
-                        rowDiv.appendChild(seatSpan);
+                if (data.seats && data.seats.length > 0) {
+                    data.seats.forEach(row => {
+                        const rowDiv = document.createElement('div');
+                        rowDiv.classList.add('conf-step__row');
+
+                        row.forEach(seat => {
+                            const seatSpan = document.createElement('span');
+                            seatSpan.className = `conf-step__chair conf-step__chair_${seat.type}`;
+                            seatSpan.dataset.row = seat.row_number;
+                            seatSpan.dataset.seat = seat.seat_number;
+                            rowDiv.appendChild(seatSpan);
+                        });
+
+                        wrapper.appendChild(rowDiv);
                     });
 
-                    wrapper.appendChild(rowDiv);
-                });
+                    attachSeatToggleHandler();
+                } else {
+                    generateDefaultSeats(data.rows, data.seats_per_row);
+                }
             })
             .catch(err => alert(err.message));
     }

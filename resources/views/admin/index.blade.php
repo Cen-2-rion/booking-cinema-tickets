@@ -8,14 +8,16 @@
     <title>Админка | ИдёмВКино</title>
     <link rel="stylesheet" href="{{ asset('admin-assets/CSS/normalize.css') }}">
     <link rel="stylesheet" href="{{ asset('admin-assets/CSS/styles.css') }}">
-    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900&amp;subset=cyrillic,cyrillic-ext,latin-ext" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900&amp;subset=cyrillic,cyrillic-ext,latin-ext"
+        rel="stylesheet">
 </head>
 <body>
 
 @include('admin.popups.add-hall')
 @include('admin.popups.remove-hall')
-@include('admin.popups.add-film')
-@include('admin.popups.remove-film')
+@include('admin.popups.add-movie')
+@include('admin.popups.remove-movie')
 
 <header class="page-header">
     <h1 class="page-header__title">Идём<span>в</span>кино</h1>
@@ -40,13 +42,15 @@
                 @forelse($halls as $hall)
                     <li>
                         {{ $hall->name }}
-                        <button class="conf-step__button conf-step__button-trash" data-hall-id="{{ $hall->id }}" data-hall-name="{{ $hall->name }}"></button>
+                        <button class="conf-step__button conf-step__button-trash" data-hall-id="{{ $hall->id }}"
+                                data-hall-name="{{ $hall->name }}"></button>
                     </li>
                 @empty
                     <li>Залов нет</li>
                 @endforelse
             </ul>
-            <button type="button" class="conf-step__button conf-step__button-accent" id="create-hall">Создать зал</button>
+            <button type="button" class="conf-step__button conf-step__button-accent" id="create-hall">Создать зал
+            </button>
         </div>
     </section>
 
@@ -104,8 +108,10 @@
                 </div>
 
                 <div class="conf-step__buttons text-center">
-                    <button class="conf-step__button conf-step__button-regular" type="button" id="hall-cancel">Отмена</button>
-                    <button class="conf-step__button conf-step__button-accent" type="button" id="hall-save">Сохранить</button>
+                    <button class="conf-step__button conf-step__button-regular" type="button" id="hall-cancel">Отмена
+                    </button>
+                    <button class="conf-step__button conf-step__button-accent" type="button" id="hall-save">Сохранить
+                    </button>
                 </div>
             @else
                 <p class="conf-step__paragraph">Нет доступных залов. Создайте зал, чтобы продолжить конфигурацию.</p>
@@ -150,8 +156,10 @@
                 </div>
 
                 <fieldset class="conf-step__buttons text-center">
-                    <button class="conf-step__button conf-step__button-regular" type="button" id="price-cancel">Отмена</button>
-                    <button class="conf-step__button conf-step__button-accent" type="button" id="price-save">Сохранить</button>
+                    <button class="conf-step__button conf-step__button-regular" type="button" id="price-cancel">Отмена
+                    </button>
+                    <button class="conf-step__button conf-step__button-accent" type="button" id="price-save">Сохранить
+                    </button>
                 </fieldset>
             @else
                 <p class="conf-step__paragraph">Сначала создайте зал, чтобы настроить цены.</p>

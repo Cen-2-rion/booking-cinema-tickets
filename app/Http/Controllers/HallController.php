@@ -38,7 +38,7 @@ class HallController extends Controller
 
     public function show(Hall $hall)
     {
-        $seats = $hall->seats()->get();
+        $seats = $hall->seats()->orderBy('row_number')->orderBy('seat_number')->get();
         $groupedSeats = [];
 
         foreach ($seats as $seat) {
@@ -51,7 +51,8 @@ class HallController extends Controller
 
             // Добавляем кресло в нужный ряд
             $groupedSeats[$row][] = [
-                'id' => $seat->id,
+                'row_number' => $seat->row_number,
+                'seat_number' => $seat->seat_number,
                 'type' => $seat->type,
             ];
         }

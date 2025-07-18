@@ -138,14 +138,20 @@ export function schedule(csrf) {
                if (movieId && start && end) {
                     const startHours = String(Math.floor(start / 60)).padStart(2, '0');
                     const startMinutes = String(start % 60).padStart(2, '0');
-                    const endHours = String(Math.floor(end / 60)).padStart(2, '0');
-                    const endMinutes = String(end % 60).padStart(2, '0');
+                    let endHours = Math.floor(end / 60);
+                    let endMinutes = end % 60;
+
+                    // Проверка последнего сеанса
+                    if (endHours === 24 && endMinutes === 0) {
+                       endHours = 23;
+                       endMinutes = 59;
+                   }
 
                     screenings.push({
                         hall_id: hallId,
                         movie_id: movieId,
                         start_time: `${startHours}:${startMinutes}`,
-                        end_time: `${endHours}:${endMinutes}`,
+                        end_time: `${String(endHours).padStart(2, '0')}:${String(endMinutes).padStart(2, '0')}`,
                     });
                }
             });

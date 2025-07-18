@@ -36,7 +36,7 @@ export function createHall(csrf) {
             if (!hallId) return;
 
             const hallName = button.dataset.hallName;
-            popupRemove.querySelector('#remove-hall-name').textContent = hallName;
+            popupRemove.querySelector('#remove-hall-name').textContent = `\"${hallName}\"`;
             popupRemove.classList.add('active');
         });
     });
