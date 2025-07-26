@@ -188,7 +188,7 @@
                     @endforeach
                 </div>
 
-                <div class="conf-step__seances">
+                <div class="conf-step__seances" id="seances-container">
                     @foreach($halls as $hall)
                         <div class="conf-step__seances-hall" data-hall-id="{{ $hall->id }}">
                             <h3 class="conf-step__seances-title">{{ $hall->name }}</h3>

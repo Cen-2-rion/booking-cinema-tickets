@@ -4,24 +4,24 @@ export function pricesConfig(csrf) {
     const saveButton = document.getElementById('price-save');
     const cancelButton = document.getElementById('price-cancel');
     const radios = document.querySelectorAll('input[name="prices-hall"]');
-    let selectedId = document.querySelector('input[name="prices-hall"]:checked').value;
-    let lastLoadedPrices = { standart_price: '', vip_price: '' };
+    let selectedId = document.querySelector('input[name="prices-hall"]:checked')?.value;
+
+    if (!standartInput || !vipInput || !saveButton || !cancelButton) return;
 
     // Загрузка цен
     function loadPricesConfig(hallId) {
-        selectedId = hallId;
-
-        fetch(`/admin/api/prices/${hallId}`)
+        fetch('/admin/api/all-data')
             .then(response => {
                 if (!response.ok) throw new Error('Ошибка загрузки цен');
                 return response.json();
             })
             .then(data => {
-                lastLoadedPrices = data;
-                standartInput.value = data.standart_price;
-                vipInput.value = data.vip_price;
-            })
-            .catch(err => alert(err.message));
+                const price = data.prices.find(p => p.hall_id == hallId);
+
+                selectedId = hallId;
+                standartInput.value = price ? price.standart_price : 350;
+                vipInput.value = price ? price.vip_price : 650;
+            });
     }
 
     radios.forEach(radio => {
@@ -32,14 +32,13 @@ export function pricesConfig(csrf) {
 
     // Сохранение конфигурации цен
     saveButton.addEventListener('click', e => {
-
         if (!selectedId || !standartInput.value || !vipInput.value) return alert('Все поля обязательны');
 
         const standart_price = parseInt(standartInput.value, 10);
         const vip_price = parseInt(vipInput.value, 10);
 
         fetch(`/admin/prices/${selectedId}`, {
-            method: 'POST',
+            method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
                 'X-CSRF-TOKEN': csrf,
@@ -48,7 +47,7 @@ export function pricesConfig(csrf) {
         })
             .then(response => {
                 if (!response.ok) throw new Error('Ошибка при сохранении цен');
-                lastLoadedPrices = { standart_price, vip_price };
+                loadPricesConfig(selectedId);
                 alert('Цены сохранены!');
             })
             .catch(err => alert(err.message));
@@ -56,7 +55,6 @@ export function pricesConfig(csrf) {
 
     // Отмена
     cancelButton.addEventListener('click', () => {
-        standartInput.value = lastLoadedPrices.standart_price;
-        vipInput.value = lastLoadedPrices.vip_price;
+        if (selectedId) loadPricesConfig(selectedId);
     });
 }

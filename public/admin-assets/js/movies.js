@@ -2,9 +2,9 @@ export function movies(csrf) {
     const addButton = document.getElementById('add-movie');
     const container = document.getElementById('movies-container');
     const popupAdd = document.getElementById('popup-add-movie');
-    const formAdd = popupAdd.querySelector('#form-add-film');
+    const formAdd = popupAdd.querySelector('#form-add-movie');
     const popupRemove = document.getElementById('popup-remove-movie');
-    const formRemove = popupRemove.querySelector('#form-remove-film');
+    const formRemove = popupRemove.querySelector('#form-remove-movie');
 
     if (!addButton || !container) return;
 
@@ -14,10 +14,9 @@ export function movies(csrf) {
     // Добавление фильма
     formAdd.addEventListener('submit', (e) => {
         e.preventDefault();
-        const form = e.target;
-        const title = form.querySelector('input[name="name"]').value;
-        const duration = form.querySelector('input[name="duration"]').value;
-        const description = form.querySelector('textarea[name="description"]').value;
+        const title = formAdd.querySelector('input[name="name"]').value;
+        const duration = formAdd.querySelector('input[name="duration"]').value;
+        const description = formAdd.querySelector('textarea[name="description"]').value;
 
         if (!title || !description || !duration) return alert('Все поля обязательны');
 
@@ -56,7 +55,7 @@ export function movies(csrf) {
     }
 
     // Подтверждение удаления фильма
-    popupRemove.querySelector('form').addEventListener('submit', (e) => {
+    formRemove.addEventListener('submit', (e) => {
         e.preventDefault();
         const id = popupRemove.dataset.movieId;
         fetch(`/admin/movies/${id}`, {

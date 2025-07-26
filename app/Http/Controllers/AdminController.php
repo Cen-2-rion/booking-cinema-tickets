@@ -10,7 +10,7 @@ class AdminController extends Controller
 {
     public function index()
     {
-        $halls = Hall::with(['seats', 'screenings.movie', 'price'])->get();
+        $halls = Hall::with(['screenings.movie'])->get();
         $movies = Movie::all();
 
         return view('admin.index', compact('halls', 'movies'));
@@ -27,7 +27,45 @@ class AdminController extends Controller
 
         return response()->json([
             'success' => true,
-            'is_active' => $newStatus
+            'is_active' => $newStatus,
+        ]);
+    }
+
+    public function getAllData()
+    {
+        $halls = Hall::with('seats')->get();
+        $movies = Movie::all();
+
+        $screenings = [];
+        foreach ($halls as $hall) {
+            foreach ($hall->screenings as $screening) {
+                $screenings[] = [
+                    'id' => $screening->id,
+                    'hall_id' => $hall->id,
+                    'movie_id' => $screening->movie_id,
+                    'start_time' => $screening->start_time->format('H:i'),
+                    'end_time' => $screening->end_time->format('H:i'),
+                    'title' => $screening->movie->title,
+                ];
+            }
+        }
+
+        $prices = [];
+        foreach ($halls as $hall) {
+            if ($hall->price) {
+                $prices[] = [
+                    'hall_id' => $hall->id,
+                    'standart_price' => $hall->price->standart_price,
+                    'vip_price' => $hall->price->vip_price,
+                ];
+            }
+        }
+
+        return response()->json([
+            'movies' => $movies,
+            'halls' => $halls,
+            'screenings' => $screenings,
+            'prices' => $prices,
         ]);
     }
 }

@@ -63,8 +63,8 @@ export function createHall(csrf) {
             button.addEventListener('click', (e) => {
                 e.preventDefault();
                 popup.classList.remove('active');
-            })
-        })
+            });
+        });
     }
 
     closePopup(popupAdd);

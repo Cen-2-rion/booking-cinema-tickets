@@ -21,14 +21,4 @@ class PriceController extends Controller
 
         return response()->json($price);
     }
-
-    public function show(Hall $hall)
-    {
-        $price = $hall->price;
-
-        return response()->json([
-            'standart_price' => $price->standart_price ?? 350,
-            'vip_price' => $price->vip_price ?? 650,
-        ]);
-    }
 }

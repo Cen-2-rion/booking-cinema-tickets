@@ -8,7 +8,7 @@
                 </h2>
             </div>
             <div class="popup__wrapper">
-                <form id="form-remove-film" accept-charset="utf-8">
+                <form id="form-remove-movie" accept-charset="utf-8">
                     <p class="conf-step__paragraph">Вы действительно хотите удалить фильм <span id="remove-movie-title"></span>?</p>
                     <div class="conf-step__buttons text-center">
                         <input type="submit" value="Удалить" class="conf-step__button conf-step__button-accent">

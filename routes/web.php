@@ -30,22 +30,20 @@ Route::middleware('auth')->prefix('admin')->group(function () {
 
     // Дашборд администратора
     Route::get('/', [AdminController::class, 'index'])->name('admin.index');
+    Route::get('/api/all-data', [AdminController::class, 'getAllData']);
 
     // Залы
-    Route::resource('halls', HallController::class)->except(['show', 'edit']);
+    Route::resource('halls', HallController::class)->only(['store', 'update', 'destroy']);
     Route::put('/halls/{hall}', [HallController::class, 'update']);
-    Route::get('/api/halls/{hall}', [HallController::class, 'show']);
 
     // Цены
-    Route::post('/prices/{hall}', [PriceController::class, 'update']);
-    Route::get('/api/prices/{hall}', [PriceController::class, 'show']);
+    Route::put('/prices/{hall}', [PriceController::class, 'update']);
 
     // Фильмы
-    Route::resource('movies', MovieController::class)->except(['show', 'create', 'edit']);
+    Route::resource('movies', MovieController::class)->only(['store', 'update', 'destroy']);
 
     // Сеансы
-    Route::resource('screenings', ScreeningController::class)->only(['store']);
-    Route::get('/api/screenings', [ScreeningController::class, 'index']);
+    Route::resource('screenings', ScreeningController::class)->only(['store', 'destroy']);
 
     // Открытие продаж
     Route::post('/open-sales', [AdminController::class, 'openSales']);

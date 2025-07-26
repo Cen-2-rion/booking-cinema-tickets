@@ -7,27 +7,6 @@ use Illuminate\Http\Request;
 
 class ScreeningController extends Controller
 {
-    public function index()
-    {
-        // Загружаем все сеансы вместе с фильмами, группируем по залу
-        $screenings = Screening::with('movie')->get()->groupBy('hall_id');
-        $data = [];
-
-        foreach ($screenings as $hallId => $items) {
-            $data[$hallId] = $items->map(function ($screening) {
-                return [
-                    'movie_id' => $screening->movie_id,
-                    'hall_id' => $screening->hall_id,
-                    'start_time' => $screening->start_time->format('H:i'),
-                    'end_time' => $screening->end_time->format('H:i'),
-                    'title' => $screening->movie->title,
-                ];
-            });
-        }
-
-        return response()->json($data);
-    }
-
     public function store(Request $request)
     {
         $request->validate([

@@ -3,6 +3,8 @@ export function schedule(csrf) {
     const cancelButton = document.getElementById('schedule-cancel');
     let draggedMovie = null;
 
+    if (!saveButton || !cancelButton) return;
+
     // Drag & Drop для фильмов
     window.enableDragging = function () {
         document.querySelectorAll('.conf-step__movie').forEach(movie => {
@@ -32,7 +34,6 @@ export function schedule(csrf) {
         const rect = timeline.getBoundingClientRect();
         const offsetX = e.clientX - rect.left;
 
-        // Вычисляем ширину и ограничиваем по правому краю
         const movieWidth = draggedMovie.duration * 0.5;
         const maxLeft = 1440 * 0.5 - movieWidth;
 
@@ -47,10 +48,7 @@ export function schedule(csrf) {
             return !(newEndMin <= extStart || newStartMin >= extEnd);
         });
 
-        if (isOverlap) {
-            alert('Нельзя наложить на другой сеанс');
-            return;
-        }
+        if (isOverlap) return alert('Нельзя наложить на другой сеанс');
 
         const movie = document.createElement('div');
         movie.className = 'conf-step__seances-movie';
@@ -83,15 +81,17 @@ export function schedule(csrf) {
 
     // Загрузка сохранённого расписания
     function loadSchedule() {
-        fetch('/admin/api/screenings')
+        fetch('/admin/api/all-data')
             .then(response => response.json())
             .then(data => {
+                const screenings = data.screenings || [];
+
                 document.querySelectorAll('.conf-step__seances-hall').forEach(hall => {
-                    const hallId = hall.dataset.hallId;
+                    const hallId = parseInt(hall.dataset.hallId);
                     const timeline = hall.querySelector('.conf-step__seances-timeline');
                     timeline.innerHTML = '';
 
-                    (data[hallId] || []).forEach(screening => {
+                    screenings.filter(screening => screening.hall_id === hallId).forEach(screening => {
                         const [h, m] = screening.start_time.split(':');
                         const [eh, em] = screening.end_time.split(':');
 
@@ -108,8 +108,8 @@ export function schedule(csrf) {
                         movie.dataset.end = end;
 
                         movie.innerHTML = `
-                            <p class="conf-step__seances-movie-title">${screening.title}</p>
-                            <p class="conf-step__seances-movie-start">${screening.start_time}</p>
+                        <p class="conf-step__seances-movie-title">${screening.title}</p>
+                        <p class="conf-step__seances-movie-start">${screening.start_time}</p>
                         `;
 
                         movie.addEventListener('dblclick', () => movie.remove());
@@ -135,7 +135,7 @@ export function schedule(csrf) {
                 const start = movieEl.dataset.start;
                 const end = movieEl.dataset.end;
 
-               if (movieId && start && end) {
+                if (movieId && start && end) {
                     const startHours = String(Math.floor(start / 60)).padStart(2, '0');
                     const startMinutes = String(start % 60).padStart(2, '0');
                     let endHours = Math.floor(end / 60);
@@ -143,9 +143,9 @@ export function schedule(csrf) {
 
                     // Проверка последнего сеанса
                     if (endHours === 24 && endMinutes === 0) {
-                       endHours = 23;
-                       endMinutes = 59;
-                   }
+                        endHours = 23;
+                        endMinutes = 59;
+                    }
 
                     screenings.push({
                         hall_id: hallId,
@@ -153,7 +153,7 @@ export function schedule(csrf) {
                         start_time: `${startHours}:${startMinutes}`,
                         end_time: `${String(endHours).padStart(2, '0')}:${String(endMinutes).padStart(2, '0')}`,
                     });
-               }
+                }
             });
         });
 

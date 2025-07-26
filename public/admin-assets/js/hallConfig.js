@@ -5,8 +5,10 @@ export function hallConfig(csrf) {
     const saveButton = document.getElementById('hall-save');
     const cancelButton = document.getElementById('hall-cancel');
     const radios = document.querySelectorAll('input[name="chairs-hall"]');
-    let selectedId = document.querySelector('input[name="chairs-hall"]:checked').value;
+    let selectedId = document.querySelector('input[name="chairs-hall"]:checked')?.value;
     let seatClickHandler;
+
+    if (!wrapper || !rowsInput || !seatsInput || !saveButton || !cancelButton) return;
 
     // Генерация мест по умолчанию
     function generateDefaultSeats(rows, seatsPerRow) {
@@ -61,15 +63,15 @@ export function hallConfig(csrf) {
     function getHallSeats() {
         const seats = [];
 
-        wrapper.querySelectorAll('.conf-step__chair').forEach(seatEl => {
-            const type = seatEl.classList.contains('conf-step__chair_vip')
+        wrapper.querySelectorAll('.conf-step__chair').forEach(seat => {
+            const type = seat.classList.contains('conf-step__chair_vip')
                 ? 'vip'
-                : seatEl.classList.contains('conf-step__chair_disabled')
+                : seat.classList.contains('conf-step__chair_disabled')
                     ? 'disabled'
                     : 'standart';
 
-            const row_number = parseInt(seatEl.dataset.row, 10);
-            const seat_number = parseInt(seatEl.dataset.seat, 10);
+            const row_number = parseInt(seat.dataset.row, 10);
+            const seat_number = parseInt(seat.dataset.seat, 10);
 
             seats.push({ row_number, seat_number, type });
         });
@@ -79,25 +81,34 @@ export function hallConfig(csrf) {
 
     // Загрузка схемы зала
     function loadHallConfig(hallId) {
-        fetch(`/admin/api/halls/${hallId}`)
+        fetch('/admin/api/all-data')
             .then(response => {
                 if (!response.ok) throw new Error('Ошибка загрузки зала');
                 return response.json();
             })
             .then(data => {
+                const hall = data.halls.find(h => h.id == hallId);
+
                 selectedId = hallId;
-                rowsInput.value = data.rows;
-                seatsInput.value = data.seats_per_row;
+                rowsInput.value = hall.rows;
+                seatsInput.value = hall.seats_per_row;
 
                 if (seatClickHandler) wrapper.removeEventListener('click', seatClickHandler);
                 wrapper.innerHTML = '';
 
-                if (data.seats && data.seats.length > 0) {
-                    data.seats.forEach(row => {
+                if (hall.seats && hall.seats.length > 0) {
+                    const scheme = [];
+                    hall.seats.forEach(seat => {
+                        const row = scheme[seat.row_number - 1] || [];
+                        row.push(seat);
+                        scheme[seat.row_number - 1] = row;
+                    });
+
+                    scheme.forEach(row => {
                         const rowDiv = document.createElement('div');
                         rowDiv.classList.add('conf-step__row');
 
-                        row.forEach(seat => {
+                        row.sort((a, b) => a.seat_number - b.seat_number).forEach(seat => {
                             const seatSpan = document.createElement('span');
                             seatSpan.className = `conf-step__chair conf-step__chair_${seat.type}`;
                             seatSpan.dataset.row = seat.row_number;
@@ -110,7 +121,7 @@ export function hallConfig(csrf) {
 
                     attachSeatToggleHandler();
                 } else {
-                    generateDefaultSeats(data.rows, data.seats_per_row);
+                    generateDefaultSeats(hall.rows, hall.seats_per_row);
                 }
             })
             .catch(err => alert(err.message));

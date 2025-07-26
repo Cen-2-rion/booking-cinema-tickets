@@ -8,7 +8,7 @@
                 </h2>
             </div>
             <div class="popup__wrapper">
-                <form id="form-add-film" accept-charset="utf-8">
+                <form id="form-add-movie" accept-charset="utf-8">
                     <label class="conf-step__label conf-step__label-fullsize" for="name">
                         Название фильма
                         <input class="conf-step__input" type="text" placeholder="Например, &laquo;Гражданин Кейн&raquo;" name="name" required>
@@ -23,7 +23,10 @@
                     </label>
                     <div class="conf-step__buttons text-center">
                         <input type="submit" value="Добавить фильм" class="conf-step__button conf-step__button-accent">
-                        <input type="submit" value="Загрузить постер" class="conf-step__button conf-step__button-accent">
+{{--                        <label class="conf-step__button conf-step__button-accent">--}}
+{{--                            Загрузить постер--}}
+{{--                            <input type="file" name="poster" required style="display: none;">--}}
+{{--                        </label>--}}
                         <button class="conf-step__button conf-step__button-regular" type="button">Отменить</button>
                     </div>
                 </form>

@@ -36,36 +36,6 @@ class HallController extends Controller
         return response()->json($hall);
     }
 
-    public function show(Hall $hall)
-    {
-        $seats = $hall->seats()->orderBy('row_number')->orderBy('seat_number')->get();
-        $groupedSeats = [];
-
-        foreach ($seats as $seat) {
-            $row = $seat->row_number;
-
-            // Если такого ряда ещё нет - создаём
-            if (!isset($groupedSeats[$row])) {
-                $groupedSeats[$row] = [];
-            }
-
-            // Добавляем кресло в нужный ряд
-            $groupedSeats[$row][] = [
-                'row_number' => $seat->row_number,
-                'seat_number' => $seat->seat_number,
-                'type' => $seat->type,
-            ];
-        }
-
-        $seatsArray = array_values($groupedSeats);
-
-        return response()->json([
-            'rows' => $hall->rows,
-            'seats_per_row' => $hall->seats_per_row,
-            'seats' => $seatsArray,
-        ]);
-    }
-
     public function update(Request $request, Hall $hall)
     {
         $validated = $request->validate([
