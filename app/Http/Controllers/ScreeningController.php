@@ -19,10 +19,24 @@ class ScreeningController extends Controller
             'screenings.*.end_time' => 'required|date_format:H:i',
         ]);
 
-        // Удаляем старые сеансы
+        return response()->json(['success' => true]);
+    }
+
+    public function update(Request $request)
+    {
+        $request->validate([
+            'hall_ids' => 'required|array',
+            'hall_ids.*' => 'required|exists:halls,id',
+            'screenings' => 'nullable|array',
+            'screenings.*.movie_id' => 'required|exists:movies,id',
+            'screenings.*.hall_id' => 'required|exists:halls,id',
+            'screenings.*.start_time' => 'required|date_format:H:i',
+            'screenings.*.end_time' => 'required|date_format:H:i',
+        ]);
+
+        // Удаляем старые сеансы и добавляем новые
         Screening::whereIn('hall_id', $request->hall_ids)->delete();
 
-        // Добавляем новые
         foreach ($request->screenings as $data) {
             Screening::create($data);
         }

@@ -1,4 +1,4 @@
-export function hallConfig(csrf) {
+export function hallConfig(csrf, data) {
     const wrapper = document.querySelector('.conf-step__hall-wrapper');
     const rowsInput = document.getElementById('hall-rows');
     const seatsInput = document.getElementById('hall-seats');
@@ -79,66 +79,68 @@ export function hallConfig(csrf) {
         return seats;
     }
 
-    // Загрузка схемы зала
-    function loadHallConfig(hallId) {
-        fetch('/admin/api/all-data')
-            .then(response => {
-                if (!response.ok) throw new Error('Ошибка загрузки зала');
-                return response.json();
-            })
-            .then(data => {
-                const hall = data.halls.find(h => h.id == hallId);
+    // Рендеринг схемы зала
+    function renderHallConfig(hallId) {
+        const hall = data.halls.find(h => h.id == hallId);
 
-                selectedId = hallId;
-                rowsInput.value = hall.rows;
-                seatsInput.value = hall.seats_per_row;
+        if (!hall) return alert('Зал не найден');
 
-                if (seatClickHandler) wrapper.removeEventListener('click', seatClickHandler);
-                wrapper.innerHTML = '';
+        selectedId = hallId;
+        rowsInput.value = hall.rows;
+        seatsInput.value = hall.seats_per_row;
 
-                if (hall.seats && hall.seats.length > 0) {
-                    const scheme = [];
-                    hall.seats.forEach(seat => {
-                        const row = scheme[seat.row_number - 1] || [];
-                        row.push(seat);
-                        scheme[seat.row_number - 1] = row;
-                    });
+        if (seatClickHandler) wrapper.removeEventListener('click', seatClickHandler);
+        wrapper.innerHTML = '';
 
-                    scheme.forEach(row => {
-                        const rowDiv = document.createElement('div');
-                        rowDiv.classList.add('conf-step__row');
+        if (hall.seats && hall.seats.length > 0) {
+            const scheme = [];
+            hall.seats.forEach(seat => {
+                const row = scheme[seat.row_number - 1] || [];
+                row.push(seat);
+                scheme[seat.row_number - 1] = row;
+            });
 
-                        row.sort((a, b) => a.seat_number - b.seat_number).forEach(seat => {
-                            const seatSpan = document.createElement('span');
-                            seatSpan.className = `conf-step__chair conf-step__chair_${seat.type}`;
-                            seatSpan.dataset.row = seat.row_number;
-                            seatSpan.dataset.seat = seat.seat_number;
-                            rowDiv.appendChild(seatSpan);
-                        });
+            scheme.forEach(row => {
+                const rowDiv = document.createElement('div');
+                rowDiv.classList.add('conf-step__row');
 
-                        wrapper.appendChild(rowDiv);
-                    });
+                row.sort((a, b) => a.seat_number - b.seat_number).forEach(seat => {
+                    const seatSpan = document.createElement('span');
+                    seatSpan.className = `conf-step__chair conf-step__chair_${seat.type}`;
+                    seatSpan.dataset.row = seat.row_number;
+                    seatSpan.dataset.seat = seat.seat_number;
+                    rowDiv.appendChild(seatSpan);
+                });
 
-                    attachSeatToggleHandler();
-                } else {
-                    generateDefaultSeats(hall.rows, hall.seats_per_row);
-                }
-            })
-            .catch(err => alert(err.message));
+                wrapper.appendChild(rowDiv);
+            });
+
+            attachSeatToggleHandler();
+        } else {
+            generateDefaultSeats(hall.rows, hall.seats_per_row);
+        }
     }
 
     rowsInput.addEventListener('input', updateScheme);
     seatsInput.addEventListener('input', updateScheme);
 
-    if (selectedId) loadHallConfig(selectedId);
+    if (selectedId) renderHallConfig(selectedId);
 
     radios.forEach(radio => {
-        radio.addEventListener('change', () => loadHallConfig(radio.value));
+        radio.addEventListener('change', () => renderHallConfig(radio.value));
     });
 
     // Сохранение конфигурации зала
     saveButton.addEventListener('click', () => {
         if (!selectedId || !rowsInput.value || !seatsInput.value) return alert('Все поля обязательны');
+
+        const rows = parseInt(rowsInput.value, 10);
+        const seatsPerRow = parseInt(seatsInput.value, 10);
+
+        // Проверка на число и отрицательные значения
+        if (isNaN(rows) || isNaN(seatsPerRow)) return alert('Значения рядов и мест должны быть целыми числами');
+
+        if (rows <= 0 || seatsPerRow <= 0) return alert('Количество рядов и мест должно быть положительным');
 
         const seats = getHallSeats();
 
@@ -150,14 +152,18 @@ export function hallConfig(csrf) {
             },
             body: JSON.stringify({
                 hall_id: selectedId,
-                rows: rowsInput.value,
-                seats_per_row: seatsInput.value,
+                rows: rows,
+                seats_per_row: seatsPerRow,
                 seats,
             })
         })
             .then(response => {
                 if (!response.ok) throw new Error('Ошибка при сохранении схемы');
-                loadHallConfig(selectedId);
+                return fetch('/admin/api/all-data');
+            })
+            .then(response => response.json())
+            .then(newData => {
+                data = newData;
                 alert('Схема зала сохранена!');
             })
             .catch(err => alert(err.message));
@@ -165,6 +171,6 @@ export function hallConfig(csrf) {
 
     // Отмена
     cancelButton.addEventListener('click', () => {
-        if (selectedId) loadHallConfig(selectedId);
+        if (selectedId) renderHallConfig(selectedId);
     });
 }

@@ -1,4 +1,4 @@
-export function schedule(csrf) {
+export function schedule(csrf, data) {
     const saveButton = document.getElementById('schedule-save');
     const cancelButton = document.getElementById('schedule-cancel');
     let draggedMovie = null;
@@ -34,6 +34,7 @@ export function schedule(csrf) {
         const rect = timeline.getBoundingClientRect();
         const offsetX = e.clientX - rect.left;
 
+        // Вычисляем ширину и ограничиваем по правому краю
         const movieWidth = draggedMovie.duration * 0.5;
         const maxLeft = 1440 * 0.5 - movieWidth;
 
@@ -50,6 +51,7 @@ export function schedule(csrf) {
 
         if (isOverlap) return alert('Нельзя наложить на другой сеанс');
 
+        // Создаём DOM-элемент нового сеанса
         const movie = document.createElement('div');
         movie.className = 'conf-step__seances-movie';
         movie.style.left = `${newStartMin * 0.5}px`;
@@ -79,45 +81,42 @@ export function schedule(csrf) {
         });
     }
 
-    // Загрузка сохранённого расписания
-    function loadSchedule() {
-        fetch('/admin/api/all-data')
-            .then(response => response.json())
-            .then(data => {
-                const screenings = data.screenings || [];
+    // Рендеринг расписания
+    function renderSchedule() {
+        const screenings = data.screenings || [];
 
-                document.querySelectorAll('.conf-step__seances-hall').forEach(hall => {
-                    const hallId = parseInt(hall.dataset.hallId);
-                    const timeline = hall.querySelector('.conf-step__seances-timeline');
-                    timeline.innerHTML = '';
+        document.querySelectorAll('.conf-step__seances-hall').forEach(hall => {
+            const hallId = parseInt(hall.dataset.hallId);
+            const timeline = hall.querySelector('.conf-step__seances-timeline');
+            timeline.innerHTML = '';
 
-                    screenings.filter(screening => screening.hall_id === hallId).forEach(screening => {
-                        const [h, m] = screening.start_time.split(':');
-                        const [eh, em] = screening.end_time.split(':');
+            // Фильтруем сеансы только для текущего зала
+            screenings.filter(screening => screening.hall_id === hallId).forEach(screening => {
+                const [h, m] = screening.start_time.split(':');
+                const [eh, em] = screening.end_time.split(':');
 
-                        const start = parseInt(h) * 60 + parseInt(m);
-                        const end = parseInt(eh) * 60 + parseInt(em);
-                        const width = (end - start) * 0.5;
+                const start = parseInt(h) * 60 + parseInt(m);
+                const end = parseInt(eh) * 60 + parseInt(em);
+                const width = (end - start) * 0.5;
 
-                        const movie = document.createElement('div');
-                        movie.className = 'conf-step__seances-movie';
-                        movie.style.left = `${start * 0.5}px`;
-                        movie.style.width = `${width}px`;
-                        movie.dataset.movieId = screening.movie_id;
-                        movie.dataset.start = start;
-                        movie.dataset.end = end;
+                const movie = document.createElement('div');
+                movie.className = 'conf-step__seances-movie';
+                movie.style.left = `${start * 0.5}px`;
+                movie.style.width = `${width}px`;
+                movie.dataset.movieId = screening.movie_id;
+                movie.dataset.start = start;
+                movie.dataset.end = end;
 
-                        movie.innerHTML = `
-                        <p class="conf-step__seances-movie-title">${screening.title}</p>
-                        <p class="conf-step__seances-movie-start">${screening.start_time}</p>
-                        `;
+                movie.innerHTML = `
+                    <p class="conf-step__seances-movie-title">${screening.title}</p>
+                    <p class="conf-step__seances-movie-start">${screening.start_time}</p>
+                `;
 
-                        movie.addEventListener('dblclick', () => movie.remove());
+                movie.addEventListener('dblclick', () => movie.remove());
 
-                        timeline.appendChild(movie);
-                    });
-                });
+                timeline.appendChild(movie);
             });
+        });
     }
 
     // Сохранение
@@ -158,20 +157,29 @@ export function schedule(csrf) {
         });
 
         fetch('/admin/screenings', {
-            method: 'POST',
+            method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
                 'X-CSRF-TOKEN': csrf,
             },
             body: JSON.stringify({ screenings, hall_ids: hallIds }),
         })
-            .then(response => response.ok ? alert('Расписание сохранено!') : alert('Ошибка при сохранении'));
+            .then(response => {
+                if (!response.ok) throw new Error('Ошибка при сохранении');
+                return fetch('/admin/api/all-data');
+            })
+            .then(response => response.json())
+            .then(newData => {
+                data = newData;
+                alert('Расписание сохранено!');
+            })
+            .catch(err => alert(err.message));
     });
 
     // Отмена
-    cancelButton.addEventListener('click', loadSchedule);
+    cancelButton.addEventListener('click', renderSchedule);
 
     enableDragging();
     initDropZones();
-    loadSchedule();
+    renderSchedule();
 }

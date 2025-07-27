@@ -49,10 +49,9 @@ class HallController extends Controller
             'seats_per_row' => $validated['seats_per_row'],
         ]);
 
-        // Удаляем старые места
+        // Удаляем старые места и создаём новые
         $hall->seats()->delete();
 
-        // Создаём новые
         foreach ($validated['seats'] as $seat) {
             $hall->seats()->create($seat);
         }

@@ -33,17 +33,18 @@ Route::middleware('auth')->prefix('admin')->group(function () {
     Route::get('/api/all-data', [AdminController::class, 'getAllData']);
 
     // Залы
-    Route::resource('halls', HallController::class)->only(['store', 'update', 'destroy']);
+    Route::resource('halls', HallController::class)->only(['store', 'destroy']);
     Route::put('/halls/{hall}', [HallController::class, 'update']);
 
     // Цены
     Route::put('/prices/{hall}', [PriceController::class, 'update']);
 
     // Фильмы
-    Route::resource('movies', MovieController::class)->only(['store', 'update', 'destroy']);
+    Route::resource('movies', MovieController::class)->only(['store', 'destroy']);
 
     // Сеансы
-    Route::resource('screenings', ScreeningController::class)->only(['store', 'destroy']);
+    Route::post('/admin/screenings', [ScreeningController::class, 'store']);
+    Route::put('/screenings', [ScreeningController::class, 'update']);
 
     // Открытие продаж
     Route::post('/open-sales', [AdminController::class, 'openSales']);

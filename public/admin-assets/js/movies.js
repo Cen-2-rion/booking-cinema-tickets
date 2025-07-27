@@ -20,6 +20,9 @@ export function movies(csrf) {
 
         if (!title || !description || !duration) return alert('Все поля обязательны');
 
+        // Проверка на отрицательное значение
+        if (duration <= 0) return alert('Длительность фильма должна быть положительной');
+
         fetch('/admin/movies', {
             method: 'POST',
             headers: {

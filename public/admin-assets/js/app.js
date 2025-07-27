@@ -11,10 +11,16 @@ document.addEventListener('DOMContentLoaded', () => {
         console.warn('CSRF-token не найден');
         return;
     }
+
+    fetch('/admin/api/all-data')
+        .then(response => response.json())
+        .then(data => {
+            hallConfig(csrf, data);
+            pricesConfig(csrf, data);
+            schedule(csrf, data);
+        });
+
     createHall(csrf);
-    hallConfig(csrf);
-    pricesConfig(csrf);
     movies(csrf);
-    schedule(csrf);
     sales(csrf);
 });

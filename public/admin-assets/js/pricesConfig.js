@@ -1,4 +1,4 @@
-export function pricesConfig(csrf) {
+export function pricesConfig(csrf, data) {
     const standartInput = document.getElementById('standart_price');
     const vipInput = document.getElementById('vip_price');
     const saveButton = document.getElementById('price-save');
@@ -8,27 +8,20 @@ export function pricesConfig(csrf) {
 
     if (!standartInput || !vipInput || !saveButton || !cancelButton) return;
 
-    // Загрузка цен
-    function loadPricesConfig(hallId) {
-        fetch('/admin/api/all-data')
-            .then(response => {
-                if (!response.ok) throw new Error('Ошибка загрузки цен');
-                return response.json();
-            })
-            .then(data => {
-                const price = data.prices.find(p => p.hall_id == hallId);
+    // Рендеринг цен
+    function renderPricesConfig(hallId) {
+        const price = data.prices.find(p => p.hall_id == hallId);
 
-                selectedId = hallId;
-                standartInput.value = price ? price.standart_price : 350;
-                vipInput.value = price ? price.vip_price : 650;
-            });
+        selectedId = hallId;
+        standartInput.value = price ? price.standart_price : 350;
+        vipInput.value = price ? price.vip_price : 650;
     }
 
     radios.forEach(radio => {
-        radio.addEventListener('change', () => loadPricesConfig(radio.value));
+        radio.addEventListener('change', () => renderPricesConfig(radio.value));
     });
 
-    if (selectedId) loadPricesConfig(selectedId);
+    if (selectedId) renderPricesConfig(selectedId);
 
     // Сохранение конфигурации цен
     saveButton.addEventListener('click', e => {
@@ -36,6 +29,11 @@ export function pricesConfig(csrf) {
 
         const standart_price = parseInt(standartInput.value, 10);
         const vip_price = parseInt(vipInput.value, 10);
+
+        // Проверка на число и отрицательные значения
+        if (isNaN(standart_price) || isNaN(vip_price)) return alert('Цены должны быть целыми числами');
+
+        if (standart_price < 0 || vip_price < 0) return alert('Цены не могут быть отрицательными');
 
         fetch(`/admin/prices/${selectedId}`, {
             method: 'PUT',
@@ -47,7 +45,11 @@ export function pricesConfig(csrf) {
         })
             .then(response => {
                 if (!response.ok) throw new Error('Ошибка при сохранении цен');
-                loadPricesConfig(selectedId);
+                return fetch('/admin/api/all-data');
+            })
+            .then(response => response.json())
+            .then(newData => {
+                data = newData;
                 alert('Цены сохранены!');
             })
             .catch(err => alert(err.message));
@@ -55,6 +57,6 @@ export function pricesConfig(csrf) {
 
     // Отмена
     cancelButton.addEventListener('click', () => {
-        if (selectedId) loadPricesConfig(selectedId);
+        if (selectedId) renderPricesConfig(selectedId);
     });
 }
