@@ -1,0 +1,31 @@
+export function alertRequiredField(value, label) {
+    if (!value.trim()) {
+        alert(`Поле "${label}" обязательно для заполнения`);
+        return false;
+    }
+    return true;
+}
+
+export function alertPositiveInteger(value, label) {
+    if (Number(value) < 0) {
+        alert(`${label} должно быть положительным целым числом`);
+        return false;
+    }
+    return true;
+}
+
+export function alertMaxLimit(value, max, label) {
+    if (Number(value) > max) {
+        alert(`${label} не может превышать ${max}`);
+        return false;
+    }
+    return true;
+}
+
+export function alertDuplicateName(name, existingNames, label) {
+    if (existingNames.includes(name.trim())) {
+        alert(`${label} с таким названием уже существует`);
+        return false;
+    }
+    return true;
+}

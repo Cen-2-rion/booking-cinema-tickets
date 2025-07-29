@@ -1,3 +1,5 @@
+import { alertRequiredField, alertPositiveInteger } from './alerts.js';
+
 export function pricesConfig(csrf, data) {
     const standartInput = document.getElementById('standart_price');
     const vipInput = document.getElementById('vip_price');
@@ -25,15 +27,13 @@ export function pricesConfig(csrf, data) {
 
     // Сохранение конфигурации цен
     saveButton.addEventListener('click', e => {
-        if (!selectedId || !standartInput.value || !vipInput.value) return alert('Все поля обязательны');
+        if (!alertRequiredField(standartInput.value, 'Цена обычного кресла') ||
+            !alertRequiredField(vipInput.value, 'Цена VIP кресла') ||
+            !alertPositiveInteger(standartInput.value, 'Цена обычного кресла') ||
+            !alertPositiveInteger(vipInput.value, 'Цена VIP кресла')) return;
 
         const standart_price = parseInt(standartInput.value, 10);
         const vip_price = parseInt(vipInput.value, 10);
-
-        // Проверка на число и отрицательные значения
-        if (isNaN(standart_price) || isNaN(vip_price)) return alert('Цены должны быть целыми числами');
-
-        if (standart_price < 0 || vip_price < 0) return alert('Цены не могут быть отрицательными');
 
         fetch(`/admin/prices/${selectedId}`, {
             method: 'PUT',

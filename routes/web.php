@@ -43,7 +43,6 @@ Route::middleware('auth')->prefix('admin')->group(function () {
     Route::resource('movies', MovieController::class)->only(['store', 'destroy']);
 
     // Сеансы
-    Route::post('/admin/screenings', [ScreeningController::class, 'store']);
     Route::put('/screenings', [ScreeningController::class, 'update']);
 
     // Открытие продаж

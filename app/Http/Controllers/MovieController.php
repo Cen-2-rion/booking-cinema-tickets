@@ -12,7 +12,7 @@ class MovieController extends Controller
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'required|string',
-            'duration' => 'required|integer|min:1',
+            'duration' => 'required|integer|min:1|max:360',
         ]);
 
         $movie = Movie::create($validated);

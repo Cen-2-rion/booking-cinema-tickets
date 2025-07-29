@@ -15,12 +15,11 @@ document.addEventListener('DOMContentLoaded', () => {
     fetch('/admin/api/all-data')
         .then(response => response.json())
         .then(data => {
+            createHall(csrf, data);
             hallConfig(csrf, data);
             pricesConfig(csrf, data);
+            movies(csrf, data);
             schedule(csrf, data);
         });
-
-    createHall(csrf);
-    movies(csrf);
     sales(csrf);
 });

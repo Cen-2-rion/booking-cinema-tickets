@@ -1,4 +1,6 @@
-export function createHall(csrf) {
+import { alertRequiredField, alertDuplicateName } from './alerts.js';
+
+export function createHall(csrf, data) {
     const popupAdd = document.getElementById('popup-add-hall');
     const formAdd = popupAdd.querySelector('#form-add-hall');
     const popupRemove = document.getElementById('popup-remove-hall');
@@ -14,7 +16,10 @@ export function createHall(csrf) {
     formAdd.addEventListener('submit', e => {
         e.preventDefault();
         const name = formAdd.querySelector(".conf-step__input").value.trim();
-        if (!name) return;
+        const existingNames = data.halls.map(h => h.name.toLowerCase());
+
+        if (!alertRequiredField(name, 'Название зала') ||
+            !alertDuplicateName(name.toLowerCase(), existingNames, 'Зал')) return;
 
         fetch('/admin/halls', {
             method: 'POST',

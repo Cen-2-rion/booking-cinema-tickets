@@ -173,7 +173,7 @@
             <h2 class="conf-step__title">Сетка сеансов</h2>
         </header>
         <div class="conf-step__wrapper">
-            @if($halls->isNotEmpty())
+
                 <p class="conf-step__paragraph">
                     <button class="conf-step__button conf-step__button-accent" id="add-movie">Добавить фильм</button>
                 </p>
@@ -188,6 +188,7 @@
                     @endforeach
                 </div>
 
+            @if($halls->isNotEmpty())
                 <div class="conf-step__seances" id="seances-container">
                     @foreach($halls as $hall)
                         <div class="conf-step__seances-hall" data-hall-id="{{ $hall->id }}">
@@ -209,7 +210,7 @@
                     <button class="conf-step__button conf-step__button-accent" id="schedule-save">Сохранить</button>
                 </fieldset>
             @else
-                <p class="conf-step__paragraph">Создайте зал, чтобы добавить фильмы и настроить расписание.</p>
+                <p class="conf-step__paragraph">Создайте зал, чтобы добавить сеансы в расписание.</p>
             @endif
         </div>
     </section>

@@ -10,7 +10,7 @@ class HallController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
+            'name' => 'required|string|max:255|unique:halls,name',
             'rows' => 'required|integer|min:1|max:20',
             'seats_per_row' => 'required|integer|min:1|max:20',
         ]);

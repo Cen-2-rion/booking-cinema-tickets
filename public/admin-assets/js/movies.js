@@ -1,4 +1,6 @@
-export function movies(csrf) {
+import { alertRequiredField, alertPositiveInteger, alertMaxLimit, alertDuplicateName } from './alerts.js';
+
+export function movies(csrf, data) {
     const addButton = document.getElementById('add-movie');
     const container = document.getElementById('movies-container');
     const popupAdd = document.getElementById('popup-add-movie');
@@ -18,10 +20,12 @@ export function movies(csrf) {
         const duration = formAdd.querySelector('input[name="duration"]').value;
         const description = formAdd.querySelector('textarea[name="description"]').value;
 
-        if (!title || !description || !duration) return alert('Все поля обязательны');
-
-        // Проверка на отрицательное значение
-        if (duration <= 0) return alert('Длительность фильма должна быть положительной');
+        if (!alertRequiredField(title, 'Название фильма') ||
+            !alertRequiredField(description, 'Описание фильма') ||
+            !alertRequiredField(duration, 'Продолжительность фильма') ||
+            !alertPositiveInteger(duration, 'Продолжительность фильма') ||
+            !alertMaxLimit(duration, 360, 'Продолжительность фильма') ||
+            !alertDuplicateName(title, data.movies.map(m => m.title), 'Фильм')) return;
 
         fetch('/admin/movies', {
             method: 'POST',

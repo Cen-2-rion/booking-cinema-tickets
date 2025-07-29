@@ -1,3 +1,5 @@
+import { alertRequiredField, alertPositiveInteger, alertMaxLimit } from './alerts.js';
+
 export function hallConfig(csrf, data) {
     const wrapper = document.querySelector('.conf-step__hall-wrapper');
     const rowsInput = document.getElementById('hall-rows');
@@ -132,16 +134,18 @@ export function hallConfig(csrf, data) {
 
     // Сохранение конфигурации зала
     saveButton.addEventListener('click', () => {
-        if (!selectedId || !rowsInput.value || !seatsInput.value) return alert('Все поля обязательны');
+        if (!selectedId) return alert('Зал не выбран');
+
+        // Вывод пользовательских оповещений
+        if (!alertRequiredField(rowsInput.value, 'Ряды') ||
+            !alertRequiredField(seatsInput.value, 'Места в ряду') ||
+            !alertPositiveInteger(rowsInput.value, 'Количество рядов') ||
+            !alertPositiveInteger(seatsInput.value, 'Количество мест') ||
+            !alertMaxLimit(rowsInput.value, 20, 'Количество рядов') ||
+            !alertMaxLimit(seatsInput.value, 20, 'Количество мест в ряду')) return;
 
         const rows = parseInt(rowsInput.value, 10);
         const seatsPerRow = parseInt(seatsInput.value, 10);
-
-        // Проверка на число и отрицательные значения
-        if (isNaN(rows) || isNaN(seatsPerRow)) return alert('Значения рядов и мест должны быть целыми числами');
-
-        if (rows <= 0 || seatsPerRow <= 0) return alert('Количество рядов и мест должно быть положительным');
-
         const seats = getHallSeats();
 
         fetch(`/admin/halls/${selectedId}`, {
