@@ -83,7 +83,7 @@ export function hallConfig(csrf, data) {
 
     // Рендеринг схемы зала
     function renderHallConfig(hallId) {
-        const hall = data.halls.find(h => h.id == hallId);
+        const hall = data.halls.find(h => h.id === +hallId);
 
         if (!hall) return alert('Зал не найден');
 
@@ -163,11 +163,11 @@ export function hallConfig(csrf, data) {
         })
             .then(response => {
                 if (!response.ok) throw new Error('Ошибка при сохранении схемы');
-                return fetch('/admin/api/all-data');
+                return response.json();
             })
-            .then(response => response.json())
-            .then(newData => {
-                data = newData;
+            .then(updatedHall => {
+                const index = data.halls.findIndex(h => h.id === updatedHall.id);
+                if (index !== -1) data.halls[index] = updatedHall;
                 alert('Схема зала сохранена!');
             })
             .catch(err => alert(err.message));

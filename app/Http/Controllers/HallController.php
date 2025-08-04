@@ -56,6 +56,9 @@ class HallController extends Controller
             $hall->seats()->create($seat);
         }
 
+        // Загружаем места вместе с залом
+        $hall->load('seats');
+
         return response()->json($hall);
     }
 

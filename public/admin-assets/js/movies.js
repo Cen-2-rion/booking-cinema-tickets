@@ -36,11 +36,7 @@ export function movies(csrf, data) {
             body: JSON.stringify({ title, description, duration }),
         })
             .then(response => {
-                if (!response.ok) throw new Error('Ошибка загрузки фильма');
-                return response.json();
-            })
-            .then(data => {
-                if (!data.id) return alert('Ошибка при создании фильма');
+                if (!response.ok) throw new Error('Ошибка при добавлении фильма');
                 location.reload();
             })
             .catch(err => alert(err.message));
@@ -72,7 +68,7 @@ export function movies(csrf, data) {
             },
         })
             .then(response => {
-                if (!response.ok) throw new Error('Ошибка при удалении');
+                if (!response.ok) throw new Error('Ошибка при удалении фильма');
                 location.reload();
             })
             .catch(err => alert(err.message));

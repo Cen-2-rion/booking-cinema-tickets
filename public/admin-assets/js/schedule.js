@@ -43,10 +43,10 @@ export function schedule(csrf, data) {
         const newEndMin = newStartMin + draggedMovie.duration;
 
         // Проверка на пересечения
-        const isOverlap = Array.from(timeline.querySelectorAll('.conf-step__seances-movie')).some(ext => {
-            const extStart = parseInt(ext.dataset.start);
-            const extEnd = parseInt(ext.dataset.end);
-            return !(newEndMin <= extStart || newStartMin >= extEnd);
+        const isOverlap = Array.from(timeline.querySelectorAll('.conf-step__seances-movie')).some(existing => {
+            const existingStart = parseInt(existing.dataset.start);
+            const existingEnd = parseInt(existing.dataset.end);
+            return !(newEndMin <= existingStart || newStartMin >= existingEnd);
         });
 
         if (isOverlap) return alert('Нельзя наложить на другой сеанс');
@@ -91,7 +91,7 @@ export function schedule(csrf, data) {
             timeline.innerHTML = '';
 
             // Фильтруем сеансы только для текущего зала
-            screenings.filter(screening => screening.hall_id === hallId).forEach(screening => {
+            screenings.filter(screening => +screening.hall_id === hallId).forEach(screening => {
                 const [h, m] = screening.start_time.split(':');
                 const [eh, em] = screening.end_time.split(':');
 
@@ -166,11 +166,10 @@ export function schedule(csrf, data) {
         })
             .then(response => {
                 if (!response.ok) throw new Error('Ошибка при сохранении');
-                return fetch('/admin/api/all-data');
+                return response.json();
             })
-            .then(response => response.json())
-            .then(newData => {
-                data = newData;
+            .then(updatedScreenings => {
+                data.screenings = updatedScreenings;
                 alert('Расписание сохранено!');
             })
             .catch(err => alert(err.message));

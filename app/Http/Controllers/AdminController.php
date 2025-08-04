@@ -62,8 +62,8 @@ class AdminController extends Controller
         }
 
         return response()->json([
-            'movies' => $movies,
             'halls' => $halls,
+            'movies' => $movies,
             'screenings' => $screenings,
             'prices' => $prices,
         ]);

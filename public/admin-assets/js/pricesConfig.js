@@ -12,7 +12,7 @@ export function pricesConfig(csrf, data) {
 
     // Рендеринг цен
     function renderPricesConfig(hallId) {
-        const price = data.prices.find(p => p.hall_id == hallId);
+        const price = data.prices.find(p => p.hall_id === +hallId);
 
         selectedId = hallId;
         standartInput.value = price ? price.standart_price : 350;
@@ -45,11 +45,11 @@ export function pricesConfig(csrf, data) {
         })
             .then(response => {
                 if (!response.ok) throw new Error('Ошибка при сохранении цен');
-                return fetch('/admin/api/all-data');
+                return response.json();
             })
-            .then(response => response.json())
-            .then(newData => {
-                data = newData;
+            .then(updatedPrice => {
+                const index = data.prices.findIndex(p => p.hall_id === updatedPrice.hall_id);
+                (index !== -1) ? data.prices[index] = updatedPrice : data.prices.push(updatedPrice);
                 alert('Цены сохранены!');
             })
             .catch(err => alert(err.message));

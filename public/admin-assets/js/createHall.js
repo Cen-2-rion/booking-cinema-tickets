@@ -28,10 +28,12 @@ export function createHall(csrf, data) {
                 'X-CSRF-TOKEN': csrf,
             },
             body: JSON.stringify({ name, rows: 4, seats_per_row: 4 })
-        }).then(response => {
-            if (!response.ok) throw new Error('Ошибка при создании зала');
-            location.reload();
-        }).catch(err => alert(err.message));
+        })
+            .then(response => {
+                if (!response.ok) throw new Error('Ошибка при создании зала');
+                location.reload();
+            })
+            .catch(err => alert(err.message));
     });
 
     // Открытие модалки удаления зала
@@ -56,10 +58,12 @@ export function createHall(csrf, data) {
             headers: {
                 'X-CSRF-TOKEN': csrf,
             }
-        }).then(response => {
-            if (!response.ok) throw new Error('Ошибка при удалении зала');
-            location.reload();
-        }).catch(err => alert(err.message));
+        })
+            .then(response => {
+                if (!response.ok) throw new Error('Ошибка при удалении зала');
+                location.reload();
+            })
+            .catch(err => alert(err.message));
     });
 
     // Закрытие модалок
