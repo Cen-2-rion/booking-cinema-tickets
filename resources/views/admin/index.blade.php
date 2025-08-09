@@ -49,8 +49,7 @@
                     <li>Залов нет</li>
                 @endforelse
             </ul>
-            <button type="button" class="conf-step__button conf-step__button-accent" id="create-hall">Создать зал
-            </button>
+            <button type="button" class="conf-step__button conf-step__button-accent" id="create-hall">Создать зал</button>
         </div>
     </section>
 
@@ -108,10 +107,8 @@
                 </div>
 
                 <div class="conf-step__buttons text-center">
-                    <button class="conf-step__button conf-step__button-regular" type="button" id="hall-cancel">Отмена
-                    </button>
-                    <button class="conf-step__button conf-step__button-accent" type="button" id="hall-save">Сохранить
-                    </button>
+                    <button class="conf-step__button conf-step__button-regular" type="button" id="hall-cancel">Отмена</button>
+                    <button class="conf-step__button conf-step__button-accent" type="button" id="hall-save">Сохранить</button>
                 </div>
             @else
                 <p class="conf-step__paragraph">Нет доступных залов. Создайте зал, чтобы продолжить конфигурацию.</p>
@@ -156,10 +153,8 @@
                 </div>
 
                 <fieldset class="conf-step__buttons text-center">
-                    <button class="conf-step__button conf-step__button-regular" type="button" id="price-cancel">Отмена
-                    </button>
-                    <button class="conf-step__button conf-step__button-accent" type="button" id="price-save">Сохранить
-                    </button>
+                    <button class="conf-step__button conf-step__button-regular" type="button" id="price-cancel">Отмена</button>
+                    <button class="conf-step__button conf-step__button-accent" type="button" id="price-save">Сохранить</button>
                 </fieldset>
             @else
                 <p class="conf-step__paragraph">Сначала создайте зал, чтобы настроить цены.</p>
@@ -181,7 +176,7 @@
                 <div class="conf-step__movies" id="movies-container">
                     @foreach($movies as $movie)
                         <div class="conf-step__movie" data-movie-id="{{ $movie->id }}">
-                            <img class="conf-step__movie-poster" src="/admin-assets/i/poster.png" alt="poster">
+                            <img class="conf-step__movie-poster" src="{{ asset('admin-assets/i/poster.png') }}" alt="poster">
                             <h3 class="conf-step__movie-title">{{ $movie->title }}</h3>
                             <p class="conf-step__movie-duration">{{ $movie->duration }} минут</p>
                         </div>
@@ -227,7 +222,7 @@
     </section>
 </main>
 
-<script src="{{ asset('admin-assets/js/accordeon.js') }}"></script>
+<script type="module" src="{{ asset('admin-assets/js/accordeon.js') }}"></script>
 <script type="module" src="{{ asset('admin-assets/js/app.js') }}"></script>
 
 </body>

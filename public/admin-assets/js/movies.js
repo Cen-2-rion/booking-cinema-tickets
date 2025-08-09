@@ -16,13 +16,16 @@ export function movies(csrf, data) {
     // Добавление фильма
     formAdd.addEventListener('submit', (e) => {
         e.preventDefault();
+
         const title = formAdd.querySelector('input[name="name"]').value;
         const duration = formAdd.querySelector('input[name="duration"]').value;
         const description = formAdd.querySelector('textarea[name="description"]').value;
+        const country = formAdd.querySelector('input[name="country"]').value;
 
         if (!alertRequiredField(title, 'Название фильма') ||
             !alertRequiredField(description, 'Описание фильма') ||
             !alertRequiredField(duration, 'Продолжительность фильма') ||
+            !alertRequiredField(country, 'Страна') ||
             !alertPositiveInteger(duration, 'Продолжительность фильма') ||
             !alertMaxLimit(duration, 360, 'Продолжительность фильма') ||
             !alertDuplicateName(title, data.movies.map(m => m.title), 'Фильм')) return;
@@ -33,7 +36,7 @@ export function movies(csrf, data) {
                 'Content-Type': 'application/json',
                 'X-CSRF-TOKEN': csrf,
             },
-            body: JSON.stringify({ title, description, duration }),
+            body: JSON.stringify({ title, description, duration, country }),
         })
             .then(response => {
                 if (!response.ok) throw new Error('Ошибка при добавлении фильма');

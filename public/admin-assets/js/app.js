@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
-    fetch('/admin/api/all-data')
+    fetch('/api/all-data')
         .then(response => response.json())
         .then(data => {
             createHall(csrf, data);

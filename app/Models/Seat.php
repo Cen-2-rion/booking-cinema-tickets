@@ -8,7 +8,12 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Seat extends Model
 {
-    protected $fillable = ['hall_id', 'row_number', 'seat_number', 'type'];
+    protected $fillable = [
+        'hall_id',
+        'row_number',
+        'seat_number',
+        'type',
+    ];
 
     public function hall(): BelongsTo
     {

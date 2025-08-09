@@ -19,7 +19,11 @@
                     </label>
                     <label class="conf-step__label conf-step__label-fullsize" for="name">
                         Описание фильма
-                        <textarea class="conf-step__input" name="description" required></textarea>
+                        <textarea class="conf-step__input" type="text" name="description" required></textarea>
+                    </label>
+                    <label class="conf-step__label conf-step__label-fullsize" for="name">
+                        Страна
+                        <input class="conf-step__input" type="text" name="country" required>
                     </label>
                     <div class="conf-step__buttons text-center">
                         <input type="submit" value="Добавить фильм" class="conf-step__button conf-step__button-accent">

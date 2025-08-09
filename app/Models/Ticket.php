@@ -7,7 +7,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Ticket extends Model
 {
-    protected $fillable = ['screening_id', 'seat_id', 'qr_code'];
+    protected $fillable = [
+        'screening_id',
+        'seat_id',
+        'qr_code',
+    ];
 
     public function screening(): BelongsTo
     {

@@ -13,6 +13,7 @@ class MovieController extends Controller
             'title' => 'required|string|max:255',
             'description' => 'required|string',
             'duration' => 'required|integer|min:1|max:360',
+            'country' => 'required|string|max:255',
         ]);
 
         $movie = Movie::create($validated);
