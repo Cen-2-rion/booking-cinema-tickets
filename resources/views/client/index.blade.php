@@ -29,7 +29,7 @@
 
 <main class="main"></main>
 
-<script src="{{ asset('client-assets/js/client.js') }}"></script>
+<script type="module" src="{{ asset('client-assets/js/client.js') }}"></script>
 
 </body>
 </html>

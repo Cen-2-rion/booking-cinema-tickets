@@ -43,7 +43,8 @@
                     <li>
                         {{ $hall->name }}
                         <button class="conf-step__button conf-step__button-trash" data-hall-id="{{ $hall->id }}"
-                                data-hall-name="{{ $hall->name }}"></button>
+                                data-hall-name="{{ $hall->name }}">
+                        </button>
                     </li>
                 @empty
                     <li>Залов нет</li>
@@ -176,7 +177,7 @@
                 <div class="conf-step__movies" id="movies-container">
                     @foreach($movies as $movie)
                         <div class="conf-step__movie" data-movie-id="{{ $movie->id }}">
-                            <img class="conf-step__movie-poster" src="{{ asset('admin-assets/i/poster.png') }}" alt="poster">
+                            <img class="conf-step__movie-poster" src="{{ $movie->poster_url }}" alt="poster">
                             <h3 class="conf-step__movie-title">{{ $movie->title }}</h3>
                             <p class="conf-step__movie-duration">{{ $movie->duration }} минут</p>
                         </div>

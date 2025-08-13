@@ -408,7 +408,8 @@ input[type='radio'], input[type='submit'], button, .conf-step__header, select {
     top: 0;
     left: 0;
     width: 38px;
-    height: 50px; }
+    height: 50px;
+    object-fit: cover; }
   .conf-step__movies .conf-step__movie-title {
     font-weight: 500;
     font-size: 1.4rem; }
@@ -640,4 +641,13 @@ textarea.conf-step__input {
   position: fixed;
   top: 20px;
   right: 20px;
+}
+
+#poster-preview {
+    display: none;
+    max-width: 150px;
+    height: auto;
+    margin: 12px auto 0;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }

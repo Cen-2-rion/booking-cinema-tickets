@@ -15,7 +15,7 @@ export function createHall(csrf, data) {
     // Создание зала
     formAdd.addEventListener('submit', e => {
         e.preventDefault();
-        const name = formAdd.querySelector(".conf-step__input").value.trim();
+        const name = formAdd.querySelector(".conf-step__input").value;
         const existingNames = data.halls.map(h => h.name.toLowerCase());
 
         if (!alertRequiredField(name, 'Название зала') ||
@@ -67,15 +67,16 @@ export function createHall(csrf, data) {
     });
 
     // Закрытие модалок
-    function closePopup(popup) {
+    function closePopup(popup, form = null) {
         popup.querySelectorAll('.popup__dismiss, .conf-step__button-regular').forEach(button => {
             button.addEventListener('click', (e) => {
                 e.preventDefault();
                 popup.classList.remove('active');
+                form.reset();
             });
         });
     }
 
-    closePopup(popupAdd);
+    closePopup(popupAdd, formAdd);
     closePopup(popupRemove);
 }

@@ -1,25 +1,27 @@
 document.addEventListener('DOMContentLoaded', () => {
     const container = document.querySelector('.main');
     const days = document.querySelectorAll('.page-nav__day');
-    let allData;
 
     fetch('/api/all-data')
         .then(response => response.json())
         .then(data => {
-            allData = data;
             dateNavigation();
-            renderMovies();
+            renderMovies(data);
         })
         .catch(err => {
             console.error('Ошибка загрузки данных:', err);
         });
 
     // Рендеринг фильмов и сеансов
-    function renderMovies() {
+    function renderMovies(data) {
         container.innerHTML = '';
 
-        allData.movies.forEach(movie => {
-            const movieScreenings = allData.screenings.filter(s => s.movie_id === movie.id);
+        // Фильтруем по активным залам - с открытой продажей
+        const openHalls = data.halls.filter(h => h.is_active).map(h => h.id);
+
+        data.movies.forEach(movie => {
+            const movieScreenings = data.screenings.filter(s => s.movie_id === movie.id && openHalls.includes(s.hall_id));
+
             if (movieScreenings.length === 0) return;
 
             const movieSection = document.createElement('section');
@@ -28,7 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
             movieSection.innerHTML = `
                 <div class="movie__info">
                     <div class="movie__poster">
-                        <img class="movie__poster-image" alt="${movie.title} постер" src="/client-assets/i/poster1.jpg">
+                        <img class="movie__poster-image" alt="${movie.title} постер" src="${movie.poster_url}">
                     </div>
                     <div class="movie__description">
                         <h2 class="movie__title">${movie.title}</h2>
@@ -43,7 +45,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const halls = [...new Set(movieScreenings.map(s => s.hall_id))];
             halls.forEach(hallId => {
-                const hall = allData.halls.find(h => h.id === hallId);
+                const hall = data.halls.find(h => h.id === hallId);
                 if (!hall) return;
 
                 const hallSection  = document.createElement('div');
@@ -80,8 +82,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 fetch('/api/all-data')
                     .then(response => response.json())
                     .then(data => {
-                        allData = data;
-                        renderMovies();
+                        renderMovies(data);
                     })
                     .catch(err => {
                         console.error('Ошибка обновления данных:', err);

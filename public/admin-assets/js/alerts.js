@@ -7,7 +7,8 @@ export function alertRequiredField(value, label) {
 }
 
 export function alertPositiveInteger(value, label) {
-    if (Number(value) < 0) {
+    const regex = /^[\d\s]+$/;
+    if (!regex.test(value)) {
         alert(`${label} должно быть положительным целым числом`);
         return false;
     }
@@ -25,6 +26,15 @@ export function alertMaxLimit(value, max, label) {
 export function alertDuplicateName(name, existingNames, label) {
     if (existingNames.includes(name.trim())) {
         alert(`${label} с таким названием уже существует`);
+        return false;
+    }
+    return true;
+}
+
+export function alertTextOnly(value, label) {
+    const regex = /^[a-zа-яё\s\W]+$/i;
+    if (!regex.test(value)) {
+        alert(`${label} может содержать только буквы, пробелы и дефисы`);
         return false;
     }
     return true;

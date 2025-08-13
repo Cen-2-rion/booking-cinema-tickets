@@ -1,4 +1,4 @@
-import { alertRequiredField, alertPositiveInteger, alertMaxLimit, alertDuplicateName } from './alerts.js';
+import { alertRequiredField, alertPositiveInteger, alertMaxLimit, alertDuplicateName, alertTextOnly } from './alerts.js';
 
 export function movies(csrf, data) {
     const addButton = document.getElementById('add-movie');
@@ -13,11 +13,22 @@ export function movies(csrf, data) {
     // Открытие модалки добавления фильма
     addButton.addEventListener('click', () => popupAdd.classList.add('active'));
 
+    const poster = formAdd.querySelector('input[name="poster"]');
+    const preview = formAdd.querySelector('#poster-preview');
+
+    // Слушаем выбор файла и показываем превью
+    poster.addEventListener('change', () => {
+        const file = poster.files[0];
+        if (file) {
+            preview.src = URL.createObjectURL(file);
+            preview.style.display = 'block';
+        }
+    });
+
     // Добавление фильма
     formAdd.addEventListener('submit', (e) => {
         e.preventDefault();
-
-        const title = formAdd.querySelector('input[name="name"]').value;
+        const title = formAdd.querySelector('input[name="title"]').value;
         const duration = formAdd.querySelector('input[name="duration"]').value;
         const description = formAdd.querySelector('textarea[name="description"]').value;
         const country = formAdd.querySelector('input[name="country"]').value;
@@ -26,17 +37,23 @@ export function movies(csrf, data) {
             !alertRequiredField(description, 'Описание фильма') ||
             !alertRequiredField(duration, 'Продолжительность фильма') ||
             !alertRequiredField(country, 'Страна') ||
+            !alertTextOnly(country, 'Страна') ||
             !alertPositiveInteger(duration, 'Продолжительность фильма') ||
             !alertMaxLimit(duration, 360, 'Продолжительность фильма') ||
             !alertDuplicateName(title, data.movies.map(m => m.title), 'Фильм')) return;
 
+        if (!poster.files[0] || poster.files[0].size > 2 * 1024 * 1024) {
+            return alert('Пожалуйста, выберите постер размером не более 2Mb');
+        }
+
+        const formData = new FormData(formAdd);
+
         fetch('/admin/movies', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
                 'X-CSRF-TOKEN': csrf,
             },
-            body: JSON.stringify({ title, description, duration, country }),
+            body: formData,
         })
             .then(response => {
                 if (!response.ok) throw new Error('Ошибка при добавлении фильма');
@@ -64,6 +81,7 @@ export function movies(csrf, data) {
     formRemove.addEventListener('submit', (e) => {
         e.preventDefault();
         const id = popupRemove.dataset.movieId;
+
         fetch(`/admin/movies/${id}`, {
             method: 'DELETE',
             headers: {
@@ -77,15 +95,18 @@ export function movies(csrf, data) {
             .catch(err => alert(err.message));
     });
 
-    function closePopup(popup) {
+    function closePopup(popup, form = null, preview = null) {
         popup.querySelectorAll('.popup__dismiss, .conf-step__button-regular').forEach(button => {
             button.addEventListener('click', (e) => {
                 e.preventDefault();
                 popup.classList.remove('active');
+                form.reset();
+                preview.src = '';
+                preview.style.display = 'none';
             })
         })
     }
 
-    closePopup(popupAdd);
+    closePopup(popupAdd, formAdd, preview);
     closePopup(popupRemove);
 }

@@ -14,7 +14,14 @@ class MovieController extends Controller
             'description' => 'required|string',
             'duration' => 'required|integer|min:1|max:360',
             'country' => 'required|string|max:255',
+            'poster' => 'required|image|mimes:jpeg,jpg,png|max:2048', // ограничиваем размер до 2Mb
         ]);
+
+        // Сохраняем постер
+        if ($request->hasFile('poster')) {
+            $path = $request->file('poster')->store('posters', 'public');
+            $validated['poster_url'] = '/storage/' . $path;
+        }
 
         $movie = Movie::create($validated);
 
