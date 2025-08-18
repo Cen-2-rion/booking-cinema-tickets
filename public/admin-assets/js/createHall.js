@@ -72,7 +72,7 @@ export function createHall(csrf, data) {
             button.addEventListener('click', (e) => {
                 e.preventDefault();
                 popup.classList.remove('active');
-                form.reset();
+                if (form) form.reset();
             });
         });
     }

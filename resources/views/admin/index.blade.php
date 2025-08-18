@@ -8,9 +8,7 @@
     <title>Админка | ИдёмВКино</title>
     <link rel="stylesheet" href="{{ asset('admin-assets/CSS/normalize.css') }}">
     <link rel="stylesheet" href="{{ asset('admin-assets/CSS/styles.css') }}">
-    <link
-        href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900&amp;subset=cyrillic,cyrillic-ext,latin-ext"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900&amp;subset=cyrillic,cyrillic-ext,latin-ext" rel="stylesheet">
 </head>
 <body>
 

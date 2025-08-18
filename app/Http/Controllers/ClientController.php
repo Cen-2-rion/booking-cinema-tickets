@@ -19,11 +19,15 @@ class ClientController extends Controller
         return view('client.index', ['dates' => $dates]);
     }
 
-    // Отображение плана зала
+    // Инфо зала, остальное загружается через hall.js
     public function showHall(Screening $screening)
     {
         $screening->load(['movie', 'hall.seats', 'tickets.seat']);
-        return view('client.hall', compact('screening'));
+
+        $movie = $screening->movie;
+        $hall = $screening->hall;
+
+        return view('client.hall', compact('movie', 'hall', 'screening'));
     }
 
     // Сохраняем выбор мест

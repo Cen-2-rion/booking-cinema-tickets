@@ -49,16 +49,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (!hall) return;
 
                 const hallSection  = document.createElement('div');
-                hallSection .classList.add('movie-seances__hall');
-                hallSection .innerHTML = `<h3 class="movie-seances__hall-title">${hall.name}</h3>`;
+                hallSection.classList.add('movie-seances__hall');
+                hallSection.innerHTML = `<h3 class="movie-seances__hall-title">${hall.name}</h3>`;
 
                 const screeningsList  = document.createElement('ul');
                 screeningsList .classList.add('movie-seances__list');
 
                 movieScreenings.filter(s => s.hall_id === hallId).forEach(s=> {
                     const screeningItem  = document.createElement('li');
-                    screeningItem .classList.add('movie-seances__time-block');
-                    screeningItem .innerHTML = `<a class="movie-seances__time" href="/hall/${s.id}">${s.start_time}</a>`;
+                    screeningItem.classList.add('movie-seances__time-block');
+                    screeningItem.innerHTML = `<a class="movie-seances__time" href="/client/hall/${s.id}">${s.start_time}</a>`;
                     screeningsList.appendChild(screeningItem);
                 });
 

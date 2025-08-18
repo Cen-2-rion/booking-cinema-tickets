@@ -6,11 +6,8 @@ import { schedule } from './schedule.js';
 import { sales } from './sales.js';
 
 document.addEventListener('DOMContentLoaded', () => {
-    const csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-    if (!csrf) {
-        console.warn('CSRF-token не найден');
-        return;
-    }
+    const csrf = document.querySelector('meta[name="csrf-token"]').content;
+    if (!csrf) return console.warn('CSRF-token не найден');
 
     fetch('/api/all-data')
         .then(response => response.json())

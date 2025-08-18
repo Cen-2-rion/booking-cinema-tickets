@@ -34,12 +34,12 @@ export function movies(csrf, data) {
         const country = formAdd.querySelector('input[name="country"]').value;
 
         if (!alertRequiredField(title, 'Название фильма') ||
-            !alertRequiredField(description, 'Описание фильма') ||
             !alertRequiredField(duration, 'Продолжительность фильма') ||
-            !alertRequiredField(country, 'Страна') ||
-            !alertTextOnly(country, 'Страна') ||
             !alertPositiveInteger(duration, 'Продолжительность фильма') ||
             !alertMaxLimit(duration, 360, 'Продолжительность фильма') ||
+            !alertRequiredField(description, 'Описание фильма') ||
+            !alertRequiredField(country, 'Страна') ||
+            !alertTextOnly(country, 'Страна') ||
             !alertDuplicateName(title, data.movies.map(m => m.title), 'Фильм')) return;
 
         if (!poster.files[0] || poster.files[0].size > 2 * 1024 * 1024) {
@@ -100,9 +100,12 @@ export function movies(csrf, data) {
             button.addEventListener('click', (e) => {
                 e.preventDefault();
                 popup.classList.remove('active');
-                form.reset();
-                preview.src = '';
-                preview.style.display = 'none';
+                if (form) form.reset();
+
+                if (preview) {
+                    preview.src = '';
+                    preview.style.display = 'none';
+                }
             })
         })
     }

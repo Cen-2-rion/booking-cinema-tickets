@@ -32,7 +32,7 @@ export function alertDuplicateName(name, existingNames, label) {
 }
 
 export function alertTextOnly(value, label) {
-    const regex = /^[a-zа-яё\s\W]+$/i;
+    const regex = /^[a-zа-яё][a-zа-яё\s-,]+$/i;
     if (!regex.test(value)) {
         alert(`${label} может содержать только буквы, пробелы и дефисы`);
         return false;

@@ -129,10 +129,10 @@ export function schedule(csrf, data) {
             hallIds.push(hallId);
 
             const timeline = hall.querySelector('.conf-step__seances-timeline');
-            timeline.querySelectorAll('.conf-step__seances-movie').forEach(movieEl => {
-                const movieId = movieEl.dataset.movieId;
-                const start = movieEl.dataset.start;
-                const end = movieEl.dataset.end;
+            timeline.querySelectorAll('.conf-step__seances-movie').forEach(movie => {
+                const movieId = movie.dataset.movieId;
+                const start = movie.dataset.start;
+                const end = movie.dataset.end;
 
                 if (movieId && start && end) {
                     const startHours = String(Math.floor(start / 60)).padStart(2, '0');

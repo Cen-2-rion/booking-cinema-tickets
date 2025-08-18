@@ -28,8 +28,8 @@ export function pricesConfig(csrf, data) {
     // Сохранение конфигурации цен
     saveButton.addEventListener('click', e => {
         if (!alertRequiredField(standartInput.value, 'Цена обычного кресла') ||
-            !alertRequiredField(vipInput.value, 'Цена VIP кресла') ||
             !alertPositiveInteger(standartInput.value, 'Цена обычного кресла') ||
+            !alertRequiredField(vipInput.value, 'Цена VIP кресла') ||
             !alertPositiveInteger(vipInput.value, 'Цена VIP кресла')) return;
 
         const standart_price = parseInt(standartInput.value, 10);

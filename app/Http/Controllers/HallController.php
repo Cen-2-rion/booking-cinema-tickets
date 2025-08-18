@@ -15,6 +15,8 @@ class HallController extends Controller
             'seats_per_row' => 'required|integer|min:1|max:20',
         ]);
 
+        $validated['name'] = mb_ucfirst($validated['name']);
+
         // Создаём зал с начальной конфигурацией
         $hall = Hall::create([
             'name' => $validated['name'],
