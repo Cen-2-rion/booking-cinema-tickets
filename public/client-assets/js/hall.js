@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const screeningId = parseInt(main.dataset.screeningId);
 
-    fetch('/api/all-data')
+    fetch(`/api/screenings/${screeningId}`)
         .then(response => response.json())
         .then(data => {
             renderHall(data);
@@ -16,28 +16,16 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error('Ошибка загрузки данных:', err);
         });
 
-    function renderHall(data) {
+    // Рендеринг зала и мест
+    function renderHall(screening) {
         wrapper.innerHTML = '';
 
-        // Находим сеанс
-        const screening = data.screenings.find(s => s.id === screeningId);
-        if (!screening) return;
-
-        // Находим зал
-        const hall = data.halls.find(h => h.id === screening.hall_id);
+        const hall = screening.hall;
         if (!hall) return;
 
-        // Цены
-        const price = data.prices.find(p => p.hall_id === hall.id);
-        if (price) {
-            standartPrice.textContent = price.standart_price;
-            vipPrice.textContent = price.vip_price;
-        }
-
         // Занятые места
-        const booked = data.booked_seats.filter(b => b.screening_id === screening.id).map(b => b.seat_id);
+        const booked = screening.booked_seats.map(b => b.seat_id);
 
-        // Рендеринг рядов и мест
         for (let row = 1; row <= hall.rows; row++) {
             const rowDiv = document.createElement('div');
             rowDiv.classList.add('buying-scheme__row');
@@ -76,7 +64,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (!selected.length) return alert('Выберите хотя бы одно место!');
 
-        fetch('/client/process-payment', {
+        fetch('/process-payment', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -89,7 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
         })
             .then(response => response.json())
             .then(data => {
-                if (data.success) location.href = '/client/payment';
+                if (data.success) location.href = '/payment';
             })
             .catch(err => {
                 console.error('Ошибка бронирования:', err);

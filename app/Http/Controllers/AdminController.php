@@ -6,7 +6,6 @@ use App\Models\Hall;
 use App\Models\Price;
 use App\Models\Movie;
 use App\Models\Screening;
-use App\Models\Ticket;
 use Illuminate\Http\Request;
 
 class AdminController extends Controller
@@ -40,25 +39,20 @@ class AdminController extends Controller
         $prices = Price::all();
         $movies = Movie::all();
 
-        $screenings = Screening::with('movie')->get()->map(function ($screening) {
-            return [
-                'id' => $screening->id,
-                'hall_id' => $screening->hall_id,
-                'movie_id' => $screening->movie_id,
-                'start_time' => $screening->start_time->format('H:i'),
-                'end_time' => $screening->end_time->format('H:i'),
-                'title' => $screening->movie->title,
-            ];
-        });
-
-        $bookedSeats = Ticket::select(['seat_id', 'screening_id'])->get();
+        $screenings = Screening::with('movie')->get()->map(fn($s) => [
+            'id' => $s->id,
+            'hall_id' => $s->hall_id,
+            'movie_id' => $s->movie_id,
+            'start_time' => $s->start_time->format('H:i'),
+            'end_time' => $s->end_time->format('H:i'),
+            'title' => $s->movie->title,
+        ]);
 
         return response()->json([
             'halls' => $halls,
             'prices' => $prices,
             'movies' => $movies,
             'screenings' => $screenings,
-            'booked_seats' => $bookedSeats,
         ]);
     }
 }

@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Hall;
+use App\Models\Seat;
+use App\Models\Movie;
 use App\Models\Screening;
 use App\Models\Ticket;
-use App\Models\Seat;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
@@ -19,15 +21,33 @@ class ClientController extends Controller
         return view('client.index', ['dates' => $dates]);
     }
 
+    public function getClientData()
+    {
+        $screenings = Screening::with(['movie', 'hall'])
+            ->whereHas('hall', fn($q) => $q->where('is_active', true))->get()->map(fn($s) => [
+                'id' => $s->id,
+                'hall_id' => $s->hall_id,
+                'movie_id' => $s->movie_id,
+                'start_time' => $s->start_time->format('H:i'),
+            ]);
+
+        $halls = Hall::whereIn('id', $screenings->pluck('hall_id'))->get();
+        $movies = Movie::whereIn('id', $screenings->pluck('movie_id'))->get();
+
+        return response()->json([
+            'halls' => $halls,
+            'movies' => $movies,
+            'screenings' => $screenings,
+        ]);
+    }
+
     // Инфо зала, остальное загружается через hall.js
     public function showHall(Screening $screening)
     {
-        $screening->load(['movie', 'hall.seats', 'tickets.seat']);
-
         $movie = $screening->movie;
         $hall = $screening->hall;
 
-        return view('client.hall', compact('movie', 'hall', 'screening'));
+        return view('client.hall', compact('screening','movie', 'hall'));
     }
 
     // Сохраняем выбор мест

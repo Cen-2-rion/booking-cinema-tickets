@@ -91,7 +91,7 @@ export function schedule(csrf, data) {
             timeline.innerHTML = '';
 
             // Фильтруем сеансы только для текущего зала
-            screenings.filter(screening => +screening.hall_id === hallId).forEach(screening => {
+            screenings.filter(s => +s.hall_id === hallId).forEach(screening => {
                 const [h, m] = screening.start_time.split(':');
                 const [eh, em] = screening.end_time.split(':');
 

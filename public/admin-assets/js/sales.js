@@ -1,6 +1,5 @@
 export function sales(csrf) {
     const salesButton = document.getElementById('open-sales');
-
     if (!salesButton) return;
 
     salesButton.addEventListener('click', e => {

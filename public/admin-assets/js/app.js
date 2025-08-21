@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const csrf = document.querySelector('meta[name="csrf-token"]').content;
     if (!csrf) return console.warn('CSRF-token не найден');
 
-    fetch('/api/all-data')
+    fetch('/admin/api/all-data')
         .then(response => response.json())
         .then(data => {
             createHall(csrf, data);

@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const container = document.querySelector('.main');
     const days = document.querySelectorAll('.page-nav__day');
 
-    fetch('/api/all-data')
+    fetch('/api/client-data')
         .then(response => response.json())
         .then(data => {
             dateNavigation();
@@ -16,11 +16,8 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderMovies(data) {
         container.innerHTML = '';
 
-        // Фильтруем по активным залам - с открытой продажей
-        const openHalls = data.halls.filter(h => h.is_active).map(h => h.id);
-
         data.movies.forEach(movie => {
-            const movieScreenings = data.screenings.filter(s => s.movie_id === movie.id && openHalls.includes(s.hall_id));
+            const movieScreenings = data.screenings.filter(s => s.movie_id === movie.id);
 
             if (movieScreenings.length === 0) return;
 
@@ -45,12 +42,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const halls = [...new Set(movieScreenings.map(s => s.hall_id))];
             halls.forEach(hallId => {
-                const hall = data.halls.find(h => h.id === hallId);
-                if (!hall) return;
+                const hallName = data.halls.find(h => h.id === hallId).name;
+                if (!hallName) return;
 
                 const hallSection  = document.createElement('div');
                 hallSection.classList.add('movie-seances__hall');
-                hallSection.innerHTML = `<h3 class="movie-seances__hall-title">${hall.name}</h3>`;
+                hallSection.innerHTML = `<h3 class="movie-seances__hall-title">${hallName}</h3>`;
 
                 const screeningsList  = document.createElement('ul');
                 screeningsList .classList.add('movie-seances__list');
@@ -58,7 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 movieScreenings.filter(s => s.hall_id === hallId).forEach(s=> {
                     const screeningItem  = document.createElement('li');
                     screeningItem.classList.add('movie-seances__time-block');
-                    screeningItem.innerHTML = `<a class="movie-seances__time" href="/client/hall/${s.id}">${s.start_time}</a>`;
+                    screeningItem.innerHTML = `<a class="movie-seances__time" href="/hall/${s.id}">${s.start_time}</a>`;
                     screeningsList.appendChild(screeningItem);
                 });
 
@@ -79,7 +76,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 days.forEach(d => d.classList.remove('page-nav__day_chosen'));
                 day.classList.add('page-nav__day_chosen');
 
-                fetch('/api/all-data')
+                fetch('/api/client-data')
                     .then(response => response.json())
                     .then(data => {
                         renderMovies(data);

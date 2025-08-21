@@ -25,13 +25,14 @@ Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-Route::get('/api/all-data', [AdminController::class, 'getAllData']);
+//Route::get('/api/all-data', [AdminController::class, 'getAllData']);
 
 // Административная часть
 Route::middleware('auth')->prefix('admin')->group(function () {
 
     // Дашборд администратора
     Route::get('/', [AdminController::class, 'index'])->name('admin.index');
+    Route::get('/api/all-data', [AdminController::class, 'getAllData']);
 
     // Залы
     Route::resource('halls', HallController::class)->only(['store', 'destroy']);
@@ -51,20 +52,20 @@ Route::middleware('auth')->prefix('admin')->group(function () {
 });
 
 // Клиентская часть
-Route::prefix('client')->group(function () {
 
-    // Главная страница со списком фильмов
-    Route::get('/', [ClientController::class, 'index']);
+// Главная страница со списком фильмов
+Route::get('/', [ClientController::class, 'index']);
+Route::get('/api/client-data', [ClientController::class, 'getClientData']);
 
-    // Просмотр зала и выбор мест для конкретного сеанса
-    Route::get('/hall/{screening}', [ClientController::class, 'showHall']);
+// Просмотр зала и выбор мест для конкретного сеанса
+Route::get('/hall/{screening}', [ClientController::class, 'showHall']);
+Route::get('/api/screenings/{screening}', [ScreeningController::class, 'getScreeningData']);
 
-    // Сохранение выбранных мест в сессии
-    Route::post('/process-payment', [ClientController::class, 'processPayment']);
+// Сохранение выбранных мест в сессии
+Route::post('/process-payment', [ClientController::class, 'processPayment']);
 
-    // Отображение формы оплаты
-    Route::get('/payment', [ClientController::class, 'showPayment']);
+// Отображение формы оплаты
+Route::get('/payment', [ClientController::class, 'showPayment']);
 
-    // Генерация билета после оплаты
-    Route::get('/ticket', [ClientController::class, 'generateTicket']);
-});
+// Генерация билета после оплаты
+Route::get('/ticket', [ClientController::class, 'generateTicket']);

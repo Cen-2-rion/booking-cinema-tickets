@@ -37,4 +37,16 @@ class ScreeningController extends Controller
 
         return response()->json($created);
     }
+
+    public function getScreeningData(Screening $screening)
+    {
+        $screening->load(['hall.seats', 'tickets']);
+
+        return response()->json([
+            'hall' => $screening->hall,
+            'booked_seats' => $screening->tickets->map(fn($t) => [
+                'seat_id' => $t->seat_id,
+            ]),
+        ]);
+    }
 }
