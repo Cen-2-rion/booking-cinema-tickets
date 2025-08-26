@@ -71,7 +71,7 @@ export function movie(csrf, data) {
         movie.addEventListener('dblclick', () => {
             const id = movie.dataset.movieId;
             const movieTitle = movie.querySelector('.conf-step__movie-title').textContent;
-            popupRemove.querySelector('#remove-movies-title').textContent = `\"${movieTitle}\"`;
+            popupRemove.querySelector('#remove-movie-title').textContent = `\"${movieTitle}\"`;
             popupRemove.classList.add('active');
             popupRemove.dataset.movieId = id;
         });
