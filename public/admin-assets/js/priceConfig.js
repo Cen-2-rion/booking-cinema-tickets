@@ -1,6 +1,6 @@
 import { alertRequiredField, alertPositiveInteger } from './alerts.js';
 
-export function pricesConfig(csrf, data) {
+export function priceConfig(csrf, data) {
     const standartInput = document.getElementById('standart_price');
     const vipInput = document.getElementById('vip_price');
     const saveButton = document.getElementById('price-save');
@@ -15,8 +15,8 @@ export function pricesConfig(csrf, data) {
         const price = data.prices.find(p => p.hall_id === +hallId);
 
         selectedId = hallId;
-        standartInput.value = price ? price.standart_price : 350;
-        vipInput.value = price ? price.vip_price : 650;
+        standartInput.value = price.standart_price;
+        vipInput.value = price.vip_price;
     }
 
     radios.forEach(radio => {

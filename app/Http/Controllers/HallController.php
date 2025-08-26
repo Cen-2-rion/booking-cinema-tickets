@@ -18,12 +18,7 @@ class HallController extends Controller
         $validated['name'] = mb_ucfirst($validated['name']);
 
         // Создаём зал с начальной конфигурацией
-        $hall = Hall::create([
-            'name' => $validated['name'],
-            'rows' => $validated['rows'],
-            'seats_per_row' => $validated['seats_per_row'],
-            'is_active' => false,
-        ]);
+        $hall = Hall::create($validated);
 
         for ($row = 1; $row <= $hall->rows; $row++) {
             for ($seat = 1; $seat <= $hall->seats_per_row; $seat++) {
@@ -34,6 +29,11 @@ class HallController extends Controller
                 ]);
             }
         }
+
+        $hall->price()->create([
+            'standart_price' => 350,
+            'vip_price' => 450,
+        ]);
 
         return response()->json($hall);
     }
@@ -53,15 +53,10 @@ class HallController extends Controller
 
         // Удаляем старые места и создаём новые
         $hall->seats()->delete();
+        $hall->seats()->createMany($validated['seats']);
 
-        foreach ($validated['seats'] as $seat) {
-            $hall->seats()->create($seat);
-        }
 
-        // Загружаем места вместе с залом
-        $hall->load('seats');
-
-        return response()->json($hall);
+        return response()->json($hall->load('seats'));
     }
 
     public function destroy(Hall $hall)

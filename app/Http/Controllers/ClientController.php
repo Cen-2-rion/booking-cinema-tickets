@@ -24,7 +24,10 @@ class ClientController extends Controller
     public function getClientData()
     {
         $screenings = Screening::with(['movie', 'hall'])
-            ->whereHas('hall', fn($q) => $q->where('is_active', true))->get()->map(fn($s) => [
+            ->whereHas('hall', fn($q) => $q->where('is_active', true))
+            ->orderBy('start_time')
+            ->get()
+            ->map(fn($s) => [
                 'id' => $s->id,
                 'hall_id' => $s->hall_id,
                 'movie_id' => $s->movie_id,
@@ -41,21 +44,13 @@ class ClientController extends Controller
         ]);
     }
 
-    // Инфо зала, остальное загружается через hall.js
-    public function showHall(Screening $screening)
-    {
-        $movie = $screening->movie;
-        $hall = $screening->hall;
-
-        return view('client.hall', compact('screening','movie', 'hall'));
-    }
-
     // Сохраняем выбор мест
     public function processPayment(Request $request)
     {
         $validated = $request->validate([
             'screening_id' => 'required|exists:screenings,id',
             'seats' => 'required|array',
+            'seat_numbers' => 'required|array',
         ]);
 
         $request->session()->put('booking_data', $validated);
@@ -67,24 +62,16 @@ class ClientController extends Controller
     public function showPayment(Request $request)
     {
         $bookingData = $request->session()->get('booking_data');
-        if (!$bookingData) return redirect('/');
 
-        $screening = Screening::with('movie', 'hall')->find($bookingData['screening_id']);
+        $screening = Screening::with(['movie', 'hall'])->findOrFail($bookingData['screening_id']);
         $selectedSeats = Seat::whereIn('id', $bookingData['seats'])->get();
+        $seatNumbers = implode(', ', $bookingData['seat_numbers']);
 
-        $seatNumbers = $selectedSeats->map(fn($seat) =>
-        "Ряд {$seat->row_number}, Место {$seat->seat_number}"
-        )->implode(', ');
-
-        $totalPrice = $selectedSeats->sum(fn($seat) =>
-        $seat->type === 'vip' ? 650 : 350
+        $totalPrice = $selectedSeats->sum(fn($s) =>
+            $s->type === 'vip' ? $screening->hall->price->vip_price : $screening->hall->price->standart_price
         );
 
-        return view('client.payment', [
-            'screening' => $screening,
-            'selectedSeats' => $seatNumbers,
-            'totalPrice' => $totalPrice
-        ]);
+        return view('client.payment', compact('screening', 'seatNumbers', 'totalPrice'));
     }
 
     // Генерация билета

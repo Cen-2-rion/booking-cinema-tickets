@@ -155,7 +155,6 @@ export function hallConfig(csrf, data) {
                 'X-CSRF-TOKEN': csrf,
             },
             body: JSON.stringify({
-                hall_id: selectedId,
                 rows: rows,
                 seats_per_row: seatsPerRow,
                 seats,

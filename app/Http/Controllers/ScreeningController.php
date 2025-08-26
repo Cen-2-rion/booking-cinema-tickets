@@ -38,6 +38,15 @@ class ScreeningController extends Controller
         return response()->json($created);
     }
 
+    // Инфо зала и цены, остальное загружается через hall.js
+    public function showHall(Screening $screening)
+    {
+        $movie = $screening->movie;
+        $hall = $screening->hall;
+
+        return view('client.hall', compact('screening','movie', 'hall'));
+    }
+
     public function getScreeningData(Screening $screening)
     {
         $screening->load(['hall.seats', 'tickets']);

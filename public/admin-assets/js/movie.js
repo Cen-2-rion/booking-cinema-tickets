@@ -1,6 +1,6 @@
 import { alertRequiredField, alertPositiveInteger, alertMaxLimit, alertDuplicateName, alertTextOnly } from './alerts.js';
 
-export function movies(csrf, data) {
+export function movie(csrf, data) {
     const addButton = document.getElementById('add-movie');
     const container = document.getElementById('movies-container');
     const popupAdd = document.getElementById('popup-add-movie');
@@ -71,7 +71,7 @@ export function movies(csrf, data) {
         movie.addEventListener('dblclick', () => {
             const id = movie.dataset.movieId;
             const movieTitle = movie.querySelector('.conf-step__movie-title').textContent;
-            popupRemove.querySelector('#remove-movie-title').textContent = `\"${movieTitle}\"`;
+            popupRemove.querySelector('#remove-movies-title').textContent = `\"${movieTitle}\"`;
             popupRemove.classList.add('active');
             popupRemove.dataset.movieId = id;
         });

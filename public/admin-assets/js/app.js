@@ -1,7 +1,7 @@
 import { createHall } from './createHall.js';
 import { hallConfig } from './hallConfig.js';
-import { pricesConfig } from './pricesConfig.js';
-import { movies } from './movies.js';
+import { priceConfig } from './priceConfig.js';
+import { movie } from './movie.js';
 import { schedule } from './schedule.js';
 import { sales } from './sales.js';
 
@@ -14,8 +14,8 @@ document.addEventListener('DOMContentLoaded', () => {
         .then(data => {
             createHall(csrf, data);
             hallConfig(csrf, data);
-            pricesConfig(csrf, data);
-            movies(csrf, data);
+            priceConfig(csrf, data);
+            movie(csrf, data);
             schedule(csrf, data);
         });
     sales(csrf);

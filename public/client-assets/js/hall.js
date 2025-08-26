@@ -1,8 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     const main = document.querySelector('.main');
     const wrapper = main.querySelector('.buying-scheme__wrapper');
-    const standartPrice = main.querySelector('#standart_price');
-    const vipPrice = main.querySelector('#vip_price');
     const acceptinButton = main.querySelector('.acceptin-button');
 
     const screeningId = parseInt(main.dataset.screeningId);
@@ -32,6 +30,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const seatsPerRow = hall.seats.filter(s => s.row_number === row);
 
+            let number = 1;
+
             seatsPerRow.forEach(seat => {
                 const seatSpan = document.createElement('span');
                 seatSpan.dataset.seatId = seat.id;
@@ -45,11 +45,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Если место занято, иначе выбираем место
                 if (booked.includes(seat.id)) {
                     seatSpan.classList.add('buying-scheme__chair_taken');
-                } else {
+                } else if (seat.type !== 'disabled') {
                     seatSpan.addEventListener('click', () => {
                         seatSpan.classList.toggle('buying-scheme__chair_selected');
                     });
                 }
+
+                // Присваиваем номер если место не disabled
+                if (seat.type !== 'disabled') seatSpan.dataset.number = number++;
 
                 rowDiv.appendChild(seatSpan);
             });
@@ -59,10 +62,15 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     acceptinButton.addEventListener('click', () => {
-        const selected = [...wrapper.querySelectorAll('.buying-scheme__chair_selected')]
-            .map(seat => seat.dataset.seatId);
+        const selectedSeats = [...wrapper.querySelectorAll('.buying-scheme__chair_selected')];
 
-        if (!selected.length) return alert('Выберите хотя бы одно место!');
+        if (!selectedSeats.length) return alert('Выберите хотя бы одно место!');
+
+        // Получаем id и номер места
+        const seatsData = selectedSeats.map(seat => ({
+            id: seat.dataset.seatId,
+            number: seat.dataset.number,
+        }));
 
         fetch('/process-payment', {
             method: 'POST',
@@ -72,15 +80,14 @@ document.addEventListener('DOMContentLoaded', () => {
             },
             body: JSON.stringify({
                 screening_id: screeningId,
-                seats: selected,
+                seats: seatsData.map(s => s.id),
+                seat_numbers: seatsData.map(s => s.number),
             })
         })
             .then(response => response.json())
             .then(data => {
                 if (data.success) location.href = '/payment';
             })
-            .catch(err => {
-                console.error('Ошибка бронирования:', err);
-            });
+            .catch(err => console.error('Ошибка бронирования:', err));
     });
 });

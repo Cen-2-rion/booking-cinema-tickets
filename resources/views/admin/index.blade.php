@@ -168,19 +168,19 @@
         </header>
         <div class="conf-step__wrapper">
 
-                <p class="conf-step__paragraph">
-                    <button class="conf-step__button conf-step__button-accent" id="add-movie">Добавить фильм</button>
-                </p>
+            <p class="conf-step__paragraph">
+                <button class="conf-step__button conf-step__button-accent" id="add-movie">Добавить фильм</button>
+            </p>
 
-                <div class="conf-step__movies" id="movies-container">
-                    @foreach($movies as $movie)
-                        <div class="conf-step__movie" data-movie-id="{{ $movie->id }}">
-                            <img class="conf-step__movie-poster" src="{{ $movie->poster_url }}" alt="poster">
-                            <h3 class="conf-step__movie-title">{{ $movie->title }}</h3>
-                            <p class="conf-step__movie-duration">{{ $movie->duration }} минут</p>
-                        </div>
-                    @endforeach
-                </div>
+            <div class="conf-step__movies" id="movies-container">
+                @foreach($movies as $movie)
+                    <div class="conf-step__movie" data-movie-id="{{ $movie->id }}">
+                        <img class="conf-step__movie-poster" src="{{ $movie->poster_url }}" alt="poster">
+                        <h3 class="conf-step__movie-title">{{ $movie->title }}</h3>
+                        <p class="conf-step__movie-duration">{{ $movie->duration }} минут</p>
+                    </div>
+                @endforeach
+            </div>
 
             @if($halls->isNotEmpty())
                 <div class="conf-step__seances" id="seances-container">

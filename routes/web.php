@@ -25,8 +25,6 @@ Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-//Route::get('/api/all-data', [AdminController::class, 'getAllData']);
-
 // Административная часть
 Route::middleware('auth')->prefix('admin')->group(function () {
 
@@ -53,18 +51,18 @@ Route::middleware('auth')->prefix('admin')->group(function () {
 
 // Клиентская часть
 
-// Главная страница со списком фильмов
+// Главная страница со списком фильмов и сеансов
 Route::get('/', [ClientController::class, 'index']);
 Route::get('/api/client-data', [ClientController::class, 'getClientData']);
 
 // Просмотр зала и выбор мест для конкретного сеанса
-Route::get('/hall/{screening}', [ClientController::class, 'showHall']);
+Route::get('/hall/{screening}', [ScreeningController::class, 'showHall']);
 Route::get('/api/screenings/{screening}', [ScreeningController::class, 'getScreeningData']);
 
 // Сохранение выбранных мест в сессии
 Route::post('/process-payment', [ClientController::class, 'processPayment']);
 
-// Отображение формы оплаты
+// Отображение страницы оплаты
 Route::get('/payment', [ClientController::class, 'showPayment']);
 
 // Генерация билета после оплаты

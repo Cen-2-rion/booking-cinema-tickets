@@ -16,7 +16,7 @@ class PriceController extends Controller
 
         $price = $hall->price()->updateOrCreate(
             ['hall_id' => $hall->id],
-            $validated
+            $validated,
         );
 
         return response()->json($price);

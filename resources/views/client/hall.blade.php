@@ -43,12 +43,8 @@
                     </p>
                 </div>
                 <div class="col">
-                    <p class="buying-scheme__legend-price"><span class="buying-scheme__chair buying-scheme__chair_taken"></span>
-                        Занято
-                    </p>
-                    <p class="buying-scheme__legend-price"><span class="buying-scheme__chair buying-scheme__chair_selected"></span>
-                        Выбрано
-                    </p>
+                    <p class="buying-scheme__legend-price"><span class="buying-scheme__chair buying-scheme__chair_taken"></span>Занято</p>
+                    <p class="buying-scheme__legend-price"><span class="buying-scheme__chair buying-scheme__chair_selected"></span>Выбрано</p>
                 </div>
             </div>
         </div>
