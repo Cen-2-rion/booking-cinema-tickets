@@ -9,7 +9,8 @@ use App\Models\Screening;
 use App\Models\Ticket;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
-use SimpleSoftwareIO\QrCode\Facades\QrCode;
+use Illuminate\Support\Str;
+use QRcode;
 
 class ClientController extends Controller
 {
@@ -58,8 +59,7 @@ class ClientController extends Controller
         return response()->json(['success' => true]);
     }
 
-    // Страница оплаты
-    public function showPayment(Request $request)
+    private function getBookingData(Request $request)
     {
         $bookingData = $request->session()->get('booking_data');
 
@@ -71,28 +71,49 @@ class ClientController extends Controller
             $s->type === 'vip' ? $screening->hall->price->vip_price : $screening->hall->price->standart_price
         );
 
-        return view('client.payment', compact('screening', 'seatNumbers', 'totalPrice'));
+        return compact('screening', 'seatNumbers', 'totalPrice');
+    }
+
+    // Страница оплаты
+    public function showPayment(Request $request)
+    {
+        $data = $this->getBookingData($request);
+
+        return view('client.payment', $data);
     }
 
     // Генерация билета
     public function generateTicket(Request $request)
     {
-        $bookingData = $request->session()->get('booking_data');
-        if (!$bookingData) return redirect('/');
+        $data = $this->getBookingData($request);
 
-        $tickets = [];
+        // Содержимое QR-кода
+        $text = implode('|', [
+            $data['screening']->movie->title,
+            $data['screening']->hall->name,
+            $data['screening']->start_time->format('H:i'),
+            $data['seatNumbers'],
+        ]);
+
+        $bookingData = $request->session()->get('booking_data');
         foreach ($bookingData['seats'] as $seatId) {
-            $qr = QrCode::format('png')->size(200)->generate(uniqid());
-            $tickets[] = Ticket::create([
-                'screening_id' => $bookingData['screening_id'],
-                'seat_id' => $seatId,
-                'qr_code' => base64_encode($qr),
-            ]);
+            Ticket::firstOrCreate(
+                [
+                    'screening_id' => $data['screening']->id,
+                    'seat_id' => $seatId,
+                ],
+                [
+                    'qr_code' => Str::uuid(),
+                ]
+            );
         }
 
-        $request->session()->forget('booking_data');
+        ob_start(); // включаем буферизацию
+        QRcode::png($text, false, 'L', 5, 2); // формируем qr-код с текстом
+        $pngData = ob_get_clean(); // достаём и очищаем буфер
+        $data['qrCode'] = base64_encode($pngData); // преобразуем в читаемый формат
 
-        return view('client.ticket', ['ticket' => $tickets[0]]);
+        return view('client.ticket', $data);
     }
 
     // Генерация дат

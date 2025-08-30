@@ -53,9 +53,7 @@ class ScreeningController extends Controller
 
         return response()->json([
             'hall' => $screening->hall,
-            'booked_seats' => $screening->tickets->map(fn($t) => [
-                'seat_id' => $t->seat_id,
-            ]),
+            'booked_seats' => $screening->tickets->pluck('seat_id'),
         ]);
     }
 }

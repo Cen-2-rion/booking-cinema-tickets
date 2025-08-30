@@ -22,30 +22,31 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!hall) return;
 
         // Занятые места
-        const booked = screening.booked_seats.map(b => b.seat_id);
+        const booked = screening.booked_seats;
 
         for (let row = 1; row <= hall.rows; row++) {
             const rowDiv = document.createElement('div');
             rowDiv.classList.add('buying-scheme__row');
 
             const seatsPerRow = hall.seats.filter(s => s.row_number === row);
-
             let number = 1;
 
             seatsPerRow.forEach(seat => {
                 const seatSpan = document.createElement('span');
                 seatSpan.dataset.seatId = seat.id;
 
-                seat.type === 'vip'
-                    ? seatSpan.classList.add('buying-scheme__chair', 'buying-scheme__chair_vip')
-                    : seat.type === 'standart'
-                        ? seatSpan.classList.add('buying-scheme__chair', 'buying-scheme__chair_standart')
-                        : seatSpan.classList.add('buying-scheme__chair', 'buying-scheme__chair_disabled')
-
-                // Если место занято, иначе выбираем место
                 if (booked.includes(seat.id)) {
-                    seatSpan.classList.add('buying-scheme__chair_taken');
-                } else if (seat.type !== 'disabled') {
+                    seatSpan.classList.add('buying-scheme__chair', 'buying-scheme__chair_taken');
+                } else if (seat.type === 'vip') {
+                    seatSpan.classList.add('buying-scheme__chair', 'buying-scheme__chair_vip');
+                } else if (seat.type === 'standart') {
+                    seatSpan.classList.add('buying-scheme__chair', 'buying-scheme__chair_standart');
+                } else {
+                    seatSpan.classList.add('buying-scheme__chair', 'buying-scheme__chair_disabled');
+                }
+
+                // Если не забранировано и не disabled - выбираем
+                if (!booked.includes(seat.id) && seat.type !== 'disabled') {
                     seatSpan.addEventListener('click', () => {
                         seatSpan.classList.toggle('buying-scheme__chair_selected');
                     });
