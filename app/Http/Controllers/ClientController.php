@@ -59,13 +59,18 @@ class ClientController extends Controller
         return response()->json(['success' => true]);
     }
 
+    // Универсальная функция для страницы оплаты и билета
     private function getBookingData(Request $request)
     {
         $bookingData = $request->session()->get('booking_data');
 
         $screening = Screening::with(['movie', 'hall'])->findOrFail($bookingData['screening_id']);
         $selectedSeats = Seat::whereIn('id', $bookingData['seats'])->get();
-        $seatNumbers = implode(', ', $bookingData['seat_numbers']);
+//        $seatNumbers = implode(', ', $bookingData['seat_numbers']);
+        $seatNumbers = collect($bookingData['seat_numbers'])
+            ->groupBy(fn($number, $index) => $selectedSeats[$index]->row_number)
+            ->map(fn($numbers, $row) => "Ряд $row: " . $numbers->implode(', '))
+            ->implode('; ');
 
         $totalPrice = $selectedSeats->sum(fn($s) =>
             $s->type === 'vip' ? $screening->hall->price->vip_price : $screening->hall->price->standart_price
